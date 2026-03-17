@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Assessment - TechHealth</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="master.css">
+
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">TechHealth</h2>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Student Dashboard</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="student.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="assessment.html" class="nav-link active">
+                    <i class="fas fa-heart-pulse"></i>
+                    <span>Mental Health Assessment</span>
+                </a>
+                <a href="#mindfulness" class="nav-link">
+                    <i class="fas fa-spa"></i>
+                    <span>Mindfulness</span>
+                </a>
+                <a href="#resources" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Resources</span>
+                </a>
+                <a href="chat-forum.html" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span>Support Chat</span>
+                </a>
+                <a href="#appointments" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="#progress" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Progress</span>
+                </a>
+                <a href="#settings" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <button class="mobile-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Mental Health Assessment</h1>
+                <div class="topbar-right">
+                    <select id="languageSelect" class="language-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी</option>
+                    </select>
+                    <button id="themeToggle" class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button onclick="handlePanic()" style="background:#e74c3c; color:white; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; font-weight:600;">
+                        <i class="fas fa-exclamation-triangle"></i> Panic
+                    </button>
+                </div>
+            </div>
+
+            <div class="content">
+                <div id="intro" style="text-align:center; padding:3rem 2rem;">
+                    <h2 style="font-size:2rem; margin-bottom:1rem; color:var(--text-primary);">Mental Health Assessment</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:2rem; font-size:1.1rem; line-height:1.6; max-width:600px; margin-left:auto; margin-right:auto;">
+                        Start with our general screening to understand your mental wellbeing. Based on your responses, we may recommend specific assessments like PHQ-9 for depression or GAD-7 for anxiety.
+                    </p>
+                    <button onclick="window.location.href='assessment.html'" style="background:linear-gradient(135deg, #4ECDC4, #44A08D); color:white; border:none; padding:1rem 2rem; border-radius:8px; font-size:1.1rem; font-weight:600; cursor:pointer;">
+                        <i class="fas fa-play-circle"></i> Start General Screening (5-7 min)
+                    </button>
+                    <br><br>
+                    <button onclick="window.location.href='phq.html'" style="background:white; color:#4ECDC4; border:2px solid #4ECDC4; padding:0.8rem 1.5rem; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer; margin-right:1rem;">
+                        <i class="fas fa-brain"></i> PHQ-9 Depression Test
+                    </button>
+                    <button onclick="window.location.href='phq.html'" style="background:white; color:#4ECDC4; border:2px solid #4ECDC4; padding:0.8rem 1.5rem; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer;">
+                        <i class="fas fa-heart"></i> GAD-7 Anxiety Test
+                    </button>
+                </div>
+
+                <div id="questions" style="display:none; padding:2rem;">
+                    <div style="margin-bottom:2rem;">
+                        <div style="background:var(--border-card); height:8px; border-radius:4px; overflow:hidden;">
+                            <div id="progress" style="background:linear-gradient(90deg, #4ECDC4, #44A08D); height:100%; width:12.5%; transition:width 0.3s;"></div>
+                        </div>
+                        <p id="progress-text" style="text-align:center; color:var(--text-secondary); margin-top:0.5rem; font-weight:500;">Question 1 of 8</p>
+                    </div>
+                    <div style="background:var(--bg-card); padding:2rem; border-radius:12px; box-shadow: 0 4px 15px var(--shadow-color);">
+                        <div style="width:35px; height:35px; border-radius:50%; background:linear-gradient(135deg, #4ECDC4, #44A08D); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; margin-bottom:1rem;" id="q-num">1</div>
+                        <p id="q-text" style="font-size:1.3rem; color:var(--text-primary); margin-bottom:1.5rem; font-weight:600; line-height:1.4;"></p>
+                        <div id="q-opts" style="display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem;"></div>
+                        <div style="display:flex; justify-content:space-between; gap:1rem;">
+                            <button onclick="prevQ()" id="prev" style="background:transparent; color:var(--text-secondary); border:2px solid var(--border-card); padding:0.8rem 1.5rem; border-radius:8px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.5rem;" disabled>
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                            <button onclick="nextQ()" id="next" style="background:linear-gradient(135deg, #4ECDC4, #44A08D); color:white; border:none; padding:0.8rem 1.5rem; border-radius:8px; font-weight:600; cursor:pointer; margin-left:auto; display:flex; align-items:center; gap:0.5rem;" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="results" style="display:none; padding:2rem;">
+                    <div style="background:var(--bg-card); padding:2rem; border-radius:12px; box-shadow: 0 4px 15px var(--shadow-color); text-align:center;">
+                        <i class="fas fa-check-circle" style="font-size:3rem; color:#4ECDC4; margin-bottom:1rem;"></i>
+                        <h2 style="font-size:1.8rem; color:var(--text-primary); margin-bottom:0.5rem;">Assessment Complete</h2>
+                        <p id="r-date" style="color:var(--text-secondary); margin-bottom:2rem;"></p>
+                        
+                        <div id="score-box" style="background:var(--welcome-bg); padding:2rem; border-radius:12px; margin-bottom:2rem; display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap;">
+                            <div style="font-size:4rem; font-weight:700; color:var(--text-primary);" id="score">0</div>
+                            <div id="interpretation"></div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1.5rem; margin-bottom:2rem;" id="recommendations"></div>
+
+                        <div id="prof-help"></div>
+
+                        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+                            <button onclick="location.reload()" style="background:linear-gradient(135deg, #4ECDC4, #44A08D); color:white; border:none; padding:0.8rem 1.5rem; border-radius:8px; font-weight:600; cursor:pointer;">
+                                <i class="fas fa-redo"></i> Take Another
+                            </button>
+                            <button onclick="window.location.href='student.html'" style="background:white; color:var(--text-secondary); border:2px solid var(--border-card); padding:0.8rem 1.5rem; border-radius:8px; font-weight:600; cursor:pointer;">
+                                <i class="fas fa-home"></i> Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="master.js" type="module"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Assessment - TechHealth</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables for Theme System */
+        :root {
+            --bg-gradient-start: #F8F9FA;
+            --bg-gradient-end: #E8F5F4;
+            --text-primary: #2C3E50;
+            --text-secondary: #5D6D7E;
+            --bg-white: white;
+            --bg-card: white;
+            --bg-card-secondary: linear-gradient(135deg, #F8F9FA, #FDFEFE);
+            --shadow-color: rgba(68, 160, 141, 0.08);
+            --shadow-hover: rgba(68, 160, 141, 0.15);
+            --border-color: rgba(68, 160, 141, 0.1);
+            --border-card: #E8F5F4;
+            --accent-gradient-start: #44A08D;
+            --accent-gradient-end: #4ECDC4;
+            --sidebar-gradient: linear-gradient(180deg, #44A08D 0%, #4ECDC4 100%);
+            --topbar-bg: rgba(255, 255, 255, 0.95);
+            --modal-bg: white;
+            --modal-header-bg: linear-gradient(135deg, #44A08D, #4ECDC4);
+            --modal-footer-bg: #F8F9FA;
+            --urgent-gradient: linear-gradient(90deg, #FF7875, #F8C471);
+            --warning-gradient: linear-gradient(90deg, #FAAD14, #F7DC6F);
+            --progress-bg: #E8F5F4;
+            --status-available: #52C41A;
+            --status-stable: #44A08D;
+            --status-concerning: #FF7875;
+            --welcome-bg: #f8f9fa;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --bg-white: #1e293b;
+            --bg-card: #1e293b;
+            --bg-card-secondary: linear-gradient(135deg, #1e293b, #334155);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(0, 0, 0, 0.4);
+            --border-color: rgba(34, 197, 94, 0.2);
+            --border-card: #334155;
+            --accent-gradient-start: #22c55e;
+            --accent-gradient-end: #16a34a;
+            --sidebar-gradient: linear-gradient(180deg, #15803d 0%, #16a34a 100%);
+            --topbar-bg: rgba(30, 41, 59, 0.95);
+            --modal-bg: #1e293b;
+            --modal-header-bg: linear-gradient(135deg, #22c55e, #16a34a);
+            --modal-footer-bg: #334155;
+            --urgent-gradient: linear-gradient(90deg, #ef4444, #f59e0b);
+            --warning-gradient: linear-gradient(90deg, #f59e0b, #eab308);
+            --progress-bg: #334155;
+            --status-available: #10b981;
+            --status-stable: #22c55e;
+            --status-concerning: #ef4444;
+            --welcome-bg: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-gradient);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 4px 0 20px var(--shadow-color);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .user-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-left-color: #F7DC6F;
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            background: var(--topbar-bg);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar h1 {
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .language-select {
+            padding: 8px 15px;
+            border: 2px solid var(--border-card);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .theme-toggle {
+            background: var(--accent-gradient-start);
+            border: 2px solid var(--accent-gradient-end);
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* Content */
+        .content {
+            padding: 30px;
+            flex: 1;
+        }
+
+        /* Assessment Styles */
+        .assessment-intro {
+            text-align: center;
+            padding: 3rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .assessment-intro h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .assessment-intro p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(68, 160, 141, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--accent-gradient-start);
+            border: 2px solid var(--accent-gradient-start);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .assessment-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Question Styles */
+        .question-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            background: var(--border-card);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .question-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .question-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-btn {
+            background: var(--bg-card-secondary);
+            border: 2px solid var(--border-card);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-gradient-start);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            color: white;
+            border-color: var(--accent-gradient-start);
+        }
+
+        .option-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(68, 160, 141, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--accent-gradient-start);
+        }
+
+        .option-btn.selected .option-number {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn.prev {
+            background: var(--bg-card-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-card);
+        }
+
+        .nav-btn.next {
+            background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            color: white;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        /* Results Styles */
+        .results-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .results-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            text-align: center;
+        }
+
+        .results-icon {
+            font-size: 3rem;
+            color: var(--accent-gradient-start);
+            margin-bottom: 1rem;
+        }
+
+        .results-title {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .results-date {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .score-box {
+            background: var(--welcome-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .score-value {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .interpretation {
+            text-align: left;
+            max-width: 300px;
+        }
+
+        .interpretation h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .interpretation p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendation-card {
+            background: var(--bg-card-secondary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: left;
+            border: 1px solid var(--border-card);
+        }
+
+        .recommendation-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recommendation-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .professional-help {
+            background: rgba(250, 173, 20, 0.1);
+            border: 1px solid rgba(250, 173, 20, 0.3);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .professional-help h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .professional-help p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: var(--modal-bg);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            background: var(--modal-header-bg);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.3s ease;
+        }
+
+        .close-btn:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .crisis-resources {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .resource-item i {
+            color: var(--accent-gradient-start);
+            font-size: 1.2rem;
+        }
+
+        .crisis-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .crisis-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .crisis-btn.primary {
+            background: var(--urgent-gradient);
+            color: white;
+        }
+
+        .crisis-btn.secondary {
+            background: var(--bg-card-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-card);
+        }
+
+        .crisis-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .assessment-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .navigation-buttons {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .results-actions, .crisis-actions {
+                flex-direction: column;
+            }
+
+            .score-box {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .interpretation {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">TechHealth</h2>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Student Dashboard</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="student.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="assessment.html" class="nav-link active">
+                    <i class="fas fa-heart-pulse"></i>
+                    <span>Mental Health Assessment</span>
+                </a>
+                <a href="#mindfulness" class="nav-link">
+                    <i class="fas fa-spa"></i>
+                    <span>Mindfulness</span>
+                </a>
+                <a href="#resources" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Resources</span>
+                </a>
+                <a href="chat-forum.html" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span>Support Chat</span>
+                </a>
+                <a href="#appointments" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="#progress" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Progress</span>
+                </a>
+                <a href="#settings" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Mental Health Assessment</h1>
+                <div class="topbar-right">
+                    <select id="languageSelect" class="language-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी</option>
+                    </select>
+                    <button id="themeToggle" class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="panicButton" class="btn-primary" style="background: var(--urgent-gradient);">
+                        <i class="fas fa-exclamation-triangle"></i> Emergency Help
+                    </button>
+                </div>
+            </div>
+
+            <div class="content">
+                <div id="intro" class="assessment-intro">
+                    <h2>Mental Health Assessment</h2>
+                    <p>
+                        Start with our general screening to understand your mental wellbeing. Based on your responses, 
+                        we may recommend specific assessments like PHQ-9 for depression or GAD-7 for anxiety.
+                    </p>
+                    <button id="startGeneral" class="btn-primary">
+                        <i class="fas fa-play-circle"></i> Start General Screening (5-7 min)
+                    </button>
+                    <div class="assessment-options">
+                        <button id="phq9Btn" class="btn-secondary">
+                            <i class="fas fa-brain"></i> PHQ-9 Depression Test
+                        </button>
+                        <button id="gad7Btn" class="btn-secondary">
+                            <i class="fas fa-heart"></i> GAD-7 Anxiety Test
+                        </button>
+                    </div>
+                </div>
+
+                <div id="questions" class="question-container" style="display:none;">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill" style="width: 12.5%;"></div>
+                        </div>
+                        <p id="progressText" class="progress-text">Question 1 of 8</p>
+                    </div>
+                    <div class="question-card">
+                        <div id="questionNumber" class="question-number">1</div>
+                        <p id="questionText" class="question-text"></p>
+                        <div id="questionOptions" class="options-container"></div>
+                        <div class="navigation-buttons">
+                            <button id="prevBtn" class="nav-btn prev" disabled>
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                            <button id="nextBtn" class="nav-btn next" disabled>
+                                Next <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="results" class="results-container" style="display:none;">
+                    <div class="results-card">
+                        <i class="fas fa-check-circle results-icon"></i>
+                        <h2 class="results-title">Assessment Complete</h2>
+                        <p id="resultsDate" class="results-date"></p>
+                        
+                        <div class="score-box">
+                            <div id="scoreValue" class="score-value">0</div>
+                            <div id="interpretation" class="interpretation">
+                                <h3>Your Results</h3>
+                                <p id="interpretationText">Based on your responses, here's how you're doing.</p>
+                            </div>
+                        </div>
+
+                        <div id="recommendations" class="recommendations-grid"></div>
+
+                        <div id="professionalHelp" class="professional-help"></div>
+
+                        <div class="results-actions">
+                            <button id="retakeBtn" class="btn-primary">
+                                <i class="fas fa-redo"></i> Take Another
+                            </button>
+                            <button id="dashboardBtn" class="btn-secondary">
+                                <i class="fas fa-home"></i> Dashboard
+                            </button>
+                            <button id="chatBtn" class="btn-secondary">
+                                <i class="fas fa-comments"></i> Talk to Someone
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Crisis Modal -->
+    <div class="modal hidden" id="crisisModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚨 Immediate Support Available</h3>
+                <button class="close-btn" id="closeCrisisModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="crisis-resources">
+                    <div class="resource-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>National Suicide Prevention Lifeline</strong>
+                            <p>988 - Available 24/7</p>
+                        </div>
+                    </div>
+                    <div class="resource-item">
+                        <i class="fas fa-comments"></i>
+                        <div>
+                            <strong>Crisis Text Line</strong>
+                            <p>Text HOME to 741741</p>
+                        </div>
+                    </div>
+                    <div class="resource-item">
+                        <i class="fas fa-globe"></i>
+                        <div>
+                            <strong>International Support</strong>
+                            <p>befrienders.org</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="crisis-actions">
+                    <button class="crisis-btn primary" id="callNowBtn">
+                        <i class="fas fa-phone"></i> Call 988 Now
+                    </button>
+                    <a href="chat-forum.html?emergency=true" class="crisis-btn secondary">
+                        <i class="fas fa-comments"></i> Emergency Chat
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mental Health Assessment Implementation
+        class MentalHealthAssessment {
+            constructor() {
+                this.currentQuestion = 0;
+                this.answers = [];
+                this.totalScore = 0;
+                this.currentLanguage = localStorage.getItem("selectedLanguage") || "en";
+                
+                // General Screening Questions
+                this.questions = [
+                    "Over the last 2 weeks, how often have you felt little interest or pleasure in doing things?",
+                    "How often have you felt down, depressed, or hopeless?",
+                    "How often have you had trouble falling or staying asleep, or sleeping too much?",
+                    "How often have you felt tired or had little energy?",
+                    "How often have you had a poor appetite or overeaten?",
+                    "How often have you felt bad about yourself — or that you are a failure or have let yourself or your family down?",
+                    "How often have you had trouble concentrating on things, such as reading or watching TV?",
+                    "How often have you been moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual?"
+                ];
+                
+                // Answer options
+                this.options = [
+                    "Not at all",
+                    "Several days",
+                    "More than half the days",
+                    "Nearly every day"
+                ];
+                
+                // Severity levels
+                this.severityLevels = [
+                    { min: 0, max: 4, level: "Minimal", description: "Your responses suggest minimal or no symptoms of depression or anxiety." },
+                    { min: 5, max: 9, level: "Mild", description: "Your responses suggest mild symptoms that may benefit from self-care strategies." },
+                    { min: 10, max: 14, level: "Moderate", description: "Your responses suggest moderate symptoms that may benefit from professional support." },
+                    { min: 15, max: 19, level: "Moderately Severe", description: "Your responses suggest moderately severe symptoms that would benefit from professional support." },
+                    { min: 20, max: 32, level: "Severe", description: "Your responses suggest severe symptoms that would benefit from immediate professional support." }
+                ];
+                
+                // Recommendations based on severity
+                this.recommendations = {
+                    "Minimal": [
+                        {
+                            title: "Maintain Healthy Habits",
+                            description: "Continue with regular exercise, balanced nutrition, and good sleep hygiene.",
+                            icon: "fas fa-heart"
+                        },
+                        {
+                            title: "Practice Mindfulness",
+                            description: "Try daily meditation or mindfulness exercises to maintain mental wellbeing.",
+                            icon: "fas fa-spa"
+                        },
+                        {
+                            title: "Stay Connected",
+                            description: "Maintain social connections and engage in activities you enjoy.",
+                            icon: "fas fa-users"
+                        }
+                    ],
+                    "Mild": [
+                        {
+                            title: "Self-Care Strategies",
+                            description: "Implement stress management techniques and establish a daily routine.",
+                            icon: "fas fa-hand-holding-heart"
+                        },
+                        {
+                            title: "Mindfulness Practice",
+                            description: "Try guided meditation apps or mindfulness exercises for 10 minutes daily.",
+                            icon: "fas fa-brain"
+                        },
+                        {
+                            title: "Physical Activity",
+                            description: "Aim for 30 minutes of moderate exercise most days of the week.",
+                            icon: "fas fa-running"
+                        }
+                    ],
+                    "Moderate": [
+                        {
+                            title: "Professional Support",
+                            description: "Consider speaking with a counselor or mental health professional.",
+                            icon: "fas fa-user-md"
+                        },
+                        {
+                            title: "Support Network",
+                            description: "Reach out to trusted friends or family members for support.",
+                            icon: "fas fa-hands-helping"
+                        },
+                        {
+                            title: "Structured Routine",
+                            description: "Establish a consistent daily schedule with time for self-care.",
+                            icon: "fas fa-calendar-alt"
+                        }
+                    ],
+                    "Moderately Severe": [
+                        {
+                            title: "Professional Help",
+                            description: "Schedule an appointment with a mental health professional soon.",
+                            icon: "fas fa-stethoscope"
+                        },
+                        {
+                            title: "Crisis Resources",
+                            description: "Save emergency contact numbers and know where to get immediate help.",
+                            icon: "fas fa-life-ring"
+                        },
+                        {
+                            title: "Safety Plan",
+                            description: "Develop a plan for managing difficult moments or crises.",
+                            icon: "fas fa-shield-alt"
+                        }
+                    ],
+                    "Severe": [
+                        {
+                            title: "Immediate Support",
+                            description: "Contact a mental health professional or crisis service immediately.",
+                            icon: "fas fa-exclamation-triangle"
+                        },
+                        {
+                            title: "Emergency Contacts",
+                            description: "Keep crisis hotline numbers readily available.",
+                            icon: "fas fa-phone-alt"
+                        },
+                        {
+                            title: "Support System",
+                            description: "Inform trusted people about your situation and ask for support.",
+                            icon: "fas fa-user-friends"
+                        }
+                    ]
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.updateLanguage();
+            }
+            
+            setupEventListeners() {
+                // Start assessment button
+                document.getElementById('startGeneral').addEventListener('click', () => {
+                    window.location.href = 'assessment.html';
+                });
+                
+                // PHQ-9 button
+                document.getElementById('phq9Btn').addEventListener('click', () => {
+                    window.location.href = 'phq.html';
+                });
+                
+                // GAD-7 button
+                document.getElementById('gad7Btn').addEventListener('click', () => {
+                    this.showTemporaryMessage('GAD7.html');
+                });
+                
+                // Language selector
+                document.getElementById('languageSelect').addEventListener('change', (e) => {
+                    this.currentLanguage = e.target.value;
+                    localStorage.setItem("selectedLanguage", e.target.value);
+                    this.updateLanguage();
+                });
+                
+                // Theme toggle
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+                
+                // Emergency button
+                document.getElementById('panicButton').addEventListener('click', () => {
+                    this.showCrisisModal();
+                });
+                
+                // Crisis modal
+                document.getElementById('closeCrisisModal').addEventListener('click', () => {
+                    this.hideCrisisModal();
+                });
+                
+                // Call now button
+                document.getElementById('callNowBtn').addEventListener('click', () => {
+                    window.location.href = 'tel:988';
+                });
+                
+                // Mobile menu toggle
+                document.getElementById('mobileToggle').addEventListener('click', () => {
+                    this.toggleSidebar();
+                });
+                
+                // Navigation buttons
+                document.getElementById('prevBtn').addEventListener('click', () => {
+                    this.previousQuestion();
+                });
+                
+                document.getElementById('nextBtn').addEventListener('click', () => {
+                    this.nextQuestion();
+                });
+                
+                // Results buttons
+                document.getElementById('retakeBtn').addEventListener('click', () => {
+                    this.startAssessment();
+                });
+                
+                document.getElementById('dashboardBtn').addEventListener('click', () => {
+                    window.location.href = 'student.html';
+                });
+                
+                document.getElementById('chatBtn').addEventListener('click', () => {
+                    window.location.href = 'chat-forum.html';
+                });
+            }
+            
+            startAssessment() {
+                document.getElementById('intro').style.display = 'none';
+                document.getElementById('questions').style.display = 'block';
+                document.getElementById('results').style.display = 'none';
+                
+                this.currentQuestion = 0;
+                this.answers = [];
+                this.totalScore = 0;
+                
+                this.showQuestion();
+            }
+            
+            showQuestion() {
+                const questionNumber = document.getElementById('questionNumber');
+                const questionText = document.getElementById('questionText');
+                const questionOptions = document.getElementById('questionOptions');
+                const progressFill = document.getElementById('progressFill');
+                const progressText = document.getElementById('progressText');
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                
+                // Update progress
+                const progress = ((this.currentQuestion) / this.questions.length) * 100;
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `Question ${this.currentQuestion + 1} of ${this.questions.length}`;
+                
+                // Update question number and text
+                questionNumber.textContent = this.currentQuestion + 1;
+                questionText.textContent = this.questions[this.currentQuestion];
+                
+                // Create options
+                questionOptions.innerHTML = '';
+                this.options.forEach((option, index) => {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.className = `option-btn ${this.answers[this.currentQuestion] === index ? 'selected' : ''}`;
+                    optionBtn.innerHTML = `
+                        <div class="option-number">${index + 1}</div>
+                        <span>${option}</span>
+                    `;
+                    optionBtn.addEventListener('click', () => {
+                        this.selectOption(index);
+                    });
+                    questionOptions.appendChild(optionBtn);
+                });
+                
+                // Update navigation buttons
+                prevBtn.disabled = this.currentQuestion === 0;
+                nextBtn.disabled = this.answers[this.currentQuestion] === undefined;
+                nextBtn.textContent = this.currentQuestion === this.questions.length - 1 ? 
+                    'See Results ' : 'Next ';
+                nextBtn.innerHTML = this.currentQuestion === this.questions.length - 1 ? 
+                    'See Results <i class="fas fa-arrow-right"></i>' : 
+                    'Next <i class="fas fa-arrow-right"></i>';
+            }
+            
+            selectOption(value) {
+                this.answers[this.currentQuestion] = value;
+                
+                // Update UI to show selected option
+                const buttons = document.querySelectorAll('.option-btn');
+                buttons.forEach(btn => btn.classList.remove('selected'));
+                event.currentTarget.classList.add('selected');
+                
+                // Enable next button
+                document.getElementById('nextBtn').disabled = false;
+            }
+            
+            previousQuestion() {
+                if (this.currentQuestion > 0) {
+                    this.currentQuestion--;
+                    this.showQuestion();
+                }
+            }
+            
+            nextQuestion() {
+                if (this.answers[this.currentQuestion] === undefined) return;
+                
+                if (this.currentQuestion < this.questions.length - 1) {
+                    this.currentQuestion++;
+                    this.showQuestion();
+                } else {
+                    this.calculateResults();
+                }
+            }
+            
+            calculateResults() {
+                // Calculate total score
+                this.totalScore = this.answers.reduce((sum, answer) => sum + answer, 0);
+                
+                // Determine severity
+                const severity = this.severityLevels.find(level => 
+                    this.totalScore >= level.min && this.totalScore <= level.max
+                );
+                
+                // Show results
+                this.showResults(severity);
+            }
+            
+            showResults(severity) {
+                document.getElementById('intro').style.display = 'none';
+                document.getElementById('questions').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                
+                // Update results date
+                const now = new Date();
+                document.getElementById('resultsDate').textContent = `Completed on ${now.toLocaleDateString()}`;
+                
+                // Update score
+                document.getElementById('scoreValue').textContent = this.totalScore;
+                
+                // Update interpretation
+                document.getElementById('interpretationText').textContent = severity.description;
+                
+                // Update recommendations
+                const recommendationsContainer = document.getElementById('recommendations');
+                recommendationsContainer.innerHTML = '';
+                
+                this.recommendations[severity.level].forEach(rec => {
+                    const recCard = document.createElement('div');
+                    recCard.className = 'recommendation-card';
+                    recCard.innerHTML = `
+                        <h4><i class="${rec.icon}"></i> ${rec.title}</h4>
+                        <p>${rec.description}</p>
+                    `;
+                    recommendationsContainer.appendChild(recCard);
+                });
+                
+                // Update professional help section based on severity
+                const professionalHelp = document.getElementById('professionalHelp');
+                if (severity.level === "Moderately Severe" || severity.level === "Severe") {
+                    professionalHelp.innerHTML = `
+                        <h3><i class="fas fa-exclamation-circle"></i> Important Notice</h3>
+                        <p>Based on your responses, we strongly recommend speaking with a mental health professional. Your wellbeing is important, and professional support can make a significant difference.</p>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button class="btn-primary" onclick="window.location.href='chat-forum.html'">
+                                <i class="fas fa-comments"></i> Connect with Support
+                            </button>
+                            <button class="btn-secondary" onclick="assessment.showCrisisModal()">
+                                <i class="fas fa-phone"></i> Emergency Help
+                            </button>
+                        </div>
+                    `;
+                } else if (severity.level === "Moderate") {
+                    professionalHelp.innerHTML = `
+                        <h3><i class="fas fa-info-circle"></i> Consider Professional Support</h3>
+                        <p>Your responses suggest that speaking with a mental health professional could be beneficial. Many people find therapy helpful for managing similar concerns.</p>
+                    `;
+                } else {
+                    professionalHelp.innerHTML = `
+                        <h3><i class="fas fa-check-circle"></i> Self-Care Focus</h3>
+                        <p>Continue practicing good self-care habits. If you notice changes in your mood or functioning, consider checking in with a healthcare provider.</p>
+                    `;
+                }
+            }
+            
+            showCrisisModal() {
+                document.getElementById('crisisModal').classList.remove('hidden');
+            }
+            
+            hideCrisisModal() {
+                document.getElementById('crisisModal').classList.add('hidden');
+            }
+            
+            toggleSidebar() {
+                document.getElementById('sidebar').classList.toggle('mobile-open');
+            }
+            
+            toggleTheme() {
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update theme icon
+                const themeIcon = document.querySelector('#themeToggle i');
+                if (newTheme === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                }
+            }
+            
+            updateLanguage() {
+                // Set language in dropdown
+                document.getElementById('languageSelect').value = this.currentLanguage;
+                
+                // In a full implementation, this would update all text based on language
+                // For this demo, we'll just log the language change
+                console.log(`Language updated to: ${this.currentLanguage}`);
+            }
+            
+            showTemporaryMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 25px var(--shadow-color);
+                    z-index: 3000;
+                    font-weight: 500;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                `;
+                messageDiv.textContent = message;
+                document.body.appendChild(messageDiv);
+
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize the assessment when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.assessment = new MentalHealthAssessment();
+            
+            // Set initial theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Update theme icon
+            const themeIcon = document.querySelector('#themeToggle i');
+            if (savedTheme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        });
+
+        // Handle window resize for mobile sidebar
+        window.addEventListener('resize', () => {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    </script>
+</body>
+</html>

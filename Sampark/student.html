@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Wellness Dashboard</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    /* CSS Variables for Theme System */
+    :root {
+      --bg-gradient-start: #F8F9FA;
+      --bg-gradient-end: #E8F5F4;
+      --text-primary: #2C3E50;
+      --text-secondary: #5D6D7E;
+      --bg-white: white;
+      --bg-card: white;
+      --bg-card-secondary: linear-gradient(135deg, #F8F9FA, #FDFEFE);
+      --shadow-color: rgba(68, 160, 141, 0.08);
+      --shadow-hover: rgba(68, 160, 141, 0.15);
+      --border-color: rgba(68, 160, 141, 0.1);
+      --border-card: #E8F5F4;
+      --accent-gradient-start: #44A08D;
+      --accent-gradient-end: #4ECDC4;
+      --sidebar-gradient: linear-gradient(180deg, #44A08D 0%, #4ECDC4 100%);
+      --topbar-bg: rgba(255, 255, 255, 0.95);
+      --modal-bg: white;
+      --modal-header-bg: linear-gradient(135deg, #44A08D, #4ECDC4);
+      --modal-footer-bg: #F8F9FA;
+      --urgent-gradient: linear-gradient(90deg, #FF7875, #F8C471);
+      --warning-gradient: linear-gradient(90deg, #FAAD14, #F7DC6F);
+      --progress-bg: #E8F5F4;
+      --status-available: #52C41A;
+      --status-stable: #44A08D;
+      --status-concerning: #FF7875;
+      --youtube-red: #FF0000;
+      --youtube-dark-red: #CC0000;
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient-start: #0f172a;
+      --bg-gradient-end: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --bg-white: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-secondary: linear-gradient(135deg, #1e293b, #334155);
+      --shadow-color: rgba(0, 0, 0, 0.3);
+      --shadow-hover: rgba(0, 0, 0, 0.4);
+      --border-color: rgba(34, 197, 94, 0.2);
+      --border-card: #334155;
+      --accent-gradient-start: #22c55e;
+      --accent-gradient-end: #16a34a;
+      --sidebar-gradient: linear-gradient(180deg, #15803d 0%, #16a34a 100%);
+      --topbar-bg: rgba(30, 41, 59, 0.95);
+      --modal-bg: #1e293b;
+      --modal-header-bg: linear-gradient(135deg, #22c55e, #16a34a);
+      --modal-footer-bg: #334155;
+      --urgent-gradient: linear-gradient(90deg, #ef4444, #f59e0b);
+      --warning-gradient: linear-gradient(90deg, #f59e0b, #eab308);
+      --progress-bg: #334155;
+      --status-available: #10b981;
+      --status-stable: #22c55e;
+      --status-concerning: #ef4444;
+      --youtube-red: #FF0000;
+      --youtube-dark-red: #CC0000;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                  background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: var(--accent-gradient-start);
+      border: 2px solid var(--accent-gradient-end);
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 8px var(--shadow-color);
+      z-index: 1001;
+      backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.15) rotate(10deg);
+      box-shadow: 0 8px 20px var(--shadow-hover);
+    }
+
+    .theme-toggle svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      color: white;
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.95);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--sidebar-gradient);
+      color: white;
+      padding: 0;
+      z-index: 1000;
+      box-shadow: 4px 0 20px var(--shadow-color);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 30px 25px;
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: white;
+    }
+
+    .user-info {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-nav {
+      padding: 20px 0;
+    }
+
+    .nav-item {
+      margin: 5px 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 15px 25px;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border-left-color: #F7DC6F;
+      transform: translateX(5px);
+    }
+
+    .nav-link i {
+      width: 20px;
+      margin-right: 15px;
+      font-size: 1.1rem;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    .topbar {
+      background: var(--topbar-bg);
+      backdrop-filter: blur(10px);
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px var(--shadow-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .topbar .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .topbar h1 {
+      color: var(--text-primary);
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .language-selector select {
+      padding: 8px 15px;
+      border: 2px solid var(--border-card);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .language-selector select:focus {
+      outline: none;
+      border-color: var(--accent-gradient-start);
+      box-shadow: 0 0 10px var(--shadow-color);
+    }
+
+    .panic-btn {
+      background: var(--urgent-gradient);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panic-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 120, 117, 0.3);
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .welcome-text h2 {
+      color: var(--text-primary);
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .welcome-text p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Section Titles */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title i {
+      color: var(--accent-gradient-start);
+    }
+
+    /* Activities Section */
+    .activities-section {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .activity-card {
+      background: var(--bg-card-secondary);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid var(--border-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-gradient-start);
+      box-shadow: 0 15px 40px var(--shadow-hover);
+    }
+
+    .activity-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+    }
+
+    .activity-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .activity-icon.breathing { background: linear-gradient(135deg, #4ECDC4, #44A08D); }
+    .activity-icon.journaling { background: linear-gradient(135deg, #FF6B6B, #FFA726); }
+    .activity-icon.mindfulness { background: linear-gradient(135deg, #A2EBB3, #4ECDC4); }
+    .activity-icon.coping { background: linear-gradient(135deg, #F7DC6F, #FAAD14); }
+    .activity-icon.meditation { background: linear-gradient(135deg, #BB8FCE, #8E44AD); }
+    .activity-icon.relaxation { background: linear-gradient(135deg, #FF9A9E, #FAD0C4); }
+    .activity-icon.relaxation2 { background: linear-gradient(135deg, #A1C4FD, #C2E9FB); }
+
+    .activity-card h4 {
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .activity-progress {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* YouTube Button */
+    .youtube-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--youtube-red);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .youtube-btn:hover {
+      background: var(--youtube-dark-red);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .achievement-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .achievement-badge i {
+      color: #F7DC6F;
+      font-size: 1.5rem;
+    }
+
+    /* Progress Section */
+    .progress-section {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 30px;
+    }
+
+    .progress-item {
+      text-align: center;
+    }
+
+    .progress-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 0 auto 15px;
+    }
+
+    .progress-circle::before {
+      content: '';
+      width: 90px;
+      height: 90px;
+      background: var(--bg-card);
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .progress-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      z-index: 1;
+    }
+
+    .progress-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal-content {
+      background: var(--modal-bg);
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      padding: 25px 30px;
+      background: var(--modal-header-bg);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+    }
+
+    .modal-header h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: white;
+      transition: opacity 0.3s ease;
+    }
+
+    .close-btn:hover {
+      opacity: 0.7;
+    }
+
+    .modal-body {
+      padding: 30px;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    /* Exercise Styles */
+    .exercise-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .youtube-section {
+      text-align: center;
+      padding: 20px;
+      background: var(--bg-card-secondary);
+      border-radius: 15px;
+      border: 1px solid var(--border-card);
+    }
+
+    .youtube-section h4 {
+      color: var(--text-primary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .exercise-step {
+      background: var(--bg-card-secondary);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid var(--border-card);
+    }
+
+    .exercise-step h4 {
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .exercise-step p {
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+    }
+
+    .timer-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .timer-display {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--accent-gradient-start);
+      margin-bottom: 15px;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .timer-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .timer-btn.primary {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+    }
+
+    .timer-btn.secondary {
+      background: var(--bg-card-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-card);
+    }
+
+    .timer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-color);
+    }
+
+    .exercise-complete {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .completion-message {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .completion-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    /* Crisis Modal */
+    .crisis-resources {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .resource-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .resource-item i {
+      color: var(--accent-gradient-start);
+      font-size: 1.2rem;
+    }
+
+    .crisis-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .crisis-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .crisis-btn.primary {
+      background: var(--urgent-gradient);
+      color: white;
+    }
+
+    .crisis-btn.secondary {
+      background: var(--bg-card-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-card);
+    }
+
+    .crisis-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-color);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .activity-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .crisis-actions, .completion-actions {
+        flex-direction: column;
+      }
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-toggle {
+        display: block;
+      }
+      .topbar h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body id="student-dashboard-page-identifier">
+
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+  <svg class="sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+  </svg>
+  <svg class="moon-icon" style="display: none;" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+  </svg>
+</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">TechHealth</div>
+    <div class="user-info">
+      <i class="fas fa-user-circle"></i>
+      <span>Student Dashboard</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-home"></i><span>Dashboard</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-brain"></i><span>Mindfulness</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-book-open"></i><span>Resources</span></a></div>
+    <div class="nav-item"><a href="chat-forum.html" class="nav-link"><i class="fas fa-comments"></i><span>Support Chat</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-calendar-alt"></i><span>Appointments</span></a></div>
+    <div class="nav-item"><a href="phq-test.html" class="nav-link"><i class="fas fa-clipboard-check"></i><span>Assessment</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-chart-line"></i><span>Progress</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-cog"></i><span>Settings</span></a></div>
+    <div class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></div>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+      <h1 id="page-title">Student Wellness Dashboard</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="language-selector">
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ur">اردو (Urdu)</option>
+          <option value="ks">کٲشُر (Kashmiri)</option>
+        </select>
+      </div>
+      <button id="panicButton" class="panic-btn">
+        <i class="fas fa-exclamation-triangle"></i> Emergency Help
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="welcome-section">
+      <div class="welcome-text">
+        <h2 id="welcome-message">Welcome to Your Wellness Space! 🌟</h2>
+        <p id="welcome-description">Take a moment to check in with yourself and explore activities designed to support your mental wellbeing.</p>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="activities-section">
+        <h3 class="section-title">
+          <i class="fas fa-heart"></i>
+          <span id="activities-title">Exercises & Meditation</span>
+        </h3>
+
+        <div class="activity-grid">
+          <div class="activity-card" data-activity="meditation">
+            <div class="activity-icon meditation"><i class="fas fa-leaf"></i></div>
+            <h4 id="meditation-title">Meditation Classes</h4>
+            <div class="activity-progress" id="meditation-progress">0 Attended</div>
+            <button class="youtube-btn" onclick="window.open('https://www.youtube.com/watch?v=wVSkYKj26qg', '_blank')">
+              <i class="fab fa-youtube"></i> Watch Video
+            </button>
+          </div>
+          <div class="activity-card" data-activity="relaxation">
+            <div class="activity-icon relaxation"><i class="fas fa-cloud"></i></div>
+            <h4 id="relaxation-title">Relaxation Exercises</h4>
+            <div class="activity-progress" id="relaxation-progress">0 Completed</div>
+            <button class="youtube-btn" onclick="window.open('https://www.youtube.com/watch?v=cX47UAy4rmc', '_blank')">
+              <i class="fab fa-youtube"></i> Watch Video
+            </button>
+          </div>
+          <div class="activity-card" data-activity="relaxation2">
+            <div class="activity-icon relaxation2"><i class="fas fa-bed"></i></div>
+            <h4 id="relaxation2-title">Deep Relaxation</h4>
+            <div class="activity-progress" id="relaxation2-progress">0 Completed</div>
+            <button class="youtube-btn" onclick="window.open('https://www.youtube.com/watch?v=cX47UAy4rmc', '_blank')">
+              <i class="fab fa-youtube"></i> Watch Video
+            </button>
+          </div>
+          <div class="activity-card" data-activity="mindfulness">
+            <div class="activity-icon mindfulness"><i class="fas fa-lotus-position"></i></div>
+            <h4 id="mindfulness-title">Mindfulness Activities</h4>
+            <div class="activity-progress" id="mindfulness-progress">0 Completed</div>
+            <button class="youtube-btn" onclick="window.open('https://www.youtube.com/watch?v=-2zdUXve6fQ', '_blank')">
+              <i class="fab fa-youtube"></i> Watch Video
+            </button>
+          </div>
+          <div class="activity-card" data-activity="breathing">
+            <div class="activity-icon breathing"><i class="fas fa-wind"></i></div>
+            <h4 id="breathing-title">Breathing Exercises</h4>
+            <div class="activity-progress" id="breathing-progress">0 Completed</div>
+          </div>
+          <div class="activity-card" data-activity="journaling">
+            <div class="activity-icon journaling"><i class="fas fa-pen-fancy"></i></div>
+            <h4 id="journaling-title">Journaling Prompts</h4>
+            <div class="activity-progress" id="journaling-progress">0 Completed</div>
+          </div>
+          <div class="activity-card" data-activity="coping">
+            <div class="activity-icon coping"><i class="fas fa-shield-alt"></i></div>
+            <h4 id="coping-title">Coping Skills</h4>
+            <div class="activity-progress" id="coping-progress">0 Practiced</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="streak-value">0</div>
+          <div class="stat-label" id="streak-label">Day Streak 🔥</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stress-level">5</div>
+          <div class="stat-label" id="stress-label">Stress Level /10</div>
+        </div>
+        <div class="stat-card">
+          <div class="achievement-badge">
+            <i class="fas fa-trophy"></i>
+            <span id="achievement-text">Getting Started!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <h3 class="section-title"><i class="fas fa-chart-area"></i> <span id="progress-title">Progress & Insights</span></h3>
+      <div class="progress-grid">
+        <div class="progress-item">
+          <div class="progress-circle" style="background: conic-gradient(var(--accent-gradient-start) 126deg, var(--border-card) 0deg);">
+            <div class="progress-value">35%</div>
+          </div>
+          <div class="progress-label" id="mood-label">Mood Tracker</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-circle" style="background: conic-gradient(#F7DC6F 180deg, var(--border-card) 0deg);">
+            <div class="progress-value">50%</div>
+          </div>
+          <div class="progress-label" id="goals-label">Weekly Goals</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Exercise Modal -->
+<div class="modal hidden" id="exerciseModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="exerciseTitle">Exercise</h3>
+      <button class="close-btn" id="closeExerciseModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="exercise-container" id="exerciseContainer">
+        <!-- Exercise content will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Crisis Modal -->
+<div class="modal hidden" id="crisisModal">
+  <div class="modal-content">
+    <div class="modal-header crisis-header">
+      <h3 id="crisisTitle">🚨 Immediate Support Available</h3>
+      <button class="close-btn" id="closeCrisisModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="crisis-resources">
+        <div class="resource-item">
+          <i class="fas fa-phone"></i>
+          <div>
+            <strong id="suicideLifeline">National Suicide Prevention Lifeline</strong>
+            <p>988 - Available 24/7</p>
+          </div>
+        </div>
+        <div class="resource-item">
+          <i class="fas fa-comments"></i>
+          <div>
+            <strong id="crisisText">Crisis Text Line</strong>
+            <p>Text HOME to 741741</p>
+          </div>
+        </div>
+        <div class="resource-item">
+          <i class="fas fa-globe"></i>
+          <div>
+            <strong id="international">International Support</strong>
+            <p>befrienders.org</p>
+          </div>
+        </div>
+      </div>
+      <div class="crisis-actions">
+        <button class="crisis-btn primary" id="callNow">
+          <i class="fas fa-phone"></i>
+          <span id="callNowText">Call 988 Now</span>
+        </button>
+        <a href="chat-forum.html?emergency=true" class="crisis-btn secondary">
+          <i class="fas fa-comments"></i>
+          <span id="chatNowText">Emergency Chat</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Student Wellness Dashboard Implementation
+class StudentDashboard {
+  constructor() {
+    this.currentLanguage = localStorage.getItem("selectedLanguage") || "en";
+    this.activityProgress = JSON.parse(localStorage.getItem("activityProgress") || "{}");
+    this.currentExercise = null;
+    this.timerInterval = null;
+    this.timerSeconds = 0;
+    
+    this.init();
+  }
+  
+  init() {
+    this.setupEventListeners();
+    this.updateProgress();
+    this.updateLanguage();
+    this.loadUserData();
+  }
+  
+  setupEventListeners() {
+    // Activity cards
+    document.querySelectorAll('.activity-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const activity = e.currentTarget.getAttribute('data-activity');
+        this.startActivity(activity);
+      });
+    });
+    
+    // Language selector
+    document.getElementById('languageSelect').addEventListener('change', (e) => {
+      this.currentLanguage = e.target.value;
+      localStorage.setItem("selectedLanguage", e.target.value);
+      this.updateLanguage();
+    });
+    
+    // Emergency button
+    document.getElementById('panicButton').addEventListener('click', () => {
+      this.showCrisisModal();
+    });
+    
+    // Modal close buttons
+    document.getElementById('closeExerciseModal').addEventListener('click', () => {
+      this.hideExerciseModal();
+    });
+    
+    document.getElementById('closeCrisisModal').addEventListener('click', () => {
+      this.hideCrisisModal();
+    });
+    
+    // Mobile menu toggle
+    document.getElementById('mobileToggle').addEventListener('click', () => {
+      this.toggleSidebar();
+    });
+    
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      this.toggleTheme();
+    });
+    
+    // Crisis modal actions
+    document.getElementById('callNow').addEventListener('click', () => {
+      window.location.href = 'tel:988';
+    });
+  }
+  
+  startActivity(activity) {
+    this.currentExercise = activity;
+    
+    const exercises = {
+      breathing: {
+        title: "Breathing Exercise",
+        steps: [
+          {
+            title: "Find a Comfortable Position",
+            description: "Sit or lie down in a comfortable position. Close your eyes if you feel comfortable doing so.",
+            duration: 0
+          },
+          {
+            title: "4-7-8 Breathing Technique",
+            description: "Inhale through your nose for 4 seconds, hold your breath for 7 seconds, and exhale slowly through your mouth for 8 seconds.",
+            duration: 120
+          },
+          {
+            title: "Repeat 5 Times",
+            description: "Continue this breathing pattern for 5 complete cycles. Focus on the rhythm of your breath.",
+            duration: 300
+          },
+          {
+            title: "Return to Normal Breathing",
+            description: "Slowly return to your normal breathing pattern. Notice how your body feels.",
+            duration: 30
+          }
+        ]
+      },
+      mindfulness: {
+        title: "Mindfulness Activities",
+        youtubeLink: "https://www.youtube.com/watch?v=-2zdUXve6fQ",
+        steps: [
+          {
+            title: "Get Comfortable",
+            description: "Find a quiet space where you won't be disturbed. Sit comfortably with your back straight.",
+            duration: 0
+          },
+          {
+            title: "Focus on Your Breath",
+            description: "Bring your attention to your breath. Notice the sensation of air moving in and out.",
+            duration: 180
+          },
+          {
+            title: "Body Scan",
+            description: "Slowly scan through your body from head to toe, noticing any sensations without judgment.",
+            duration: 300
+          },
+          {
+            title: "Return to Awareness",
+            description: "Gently bring your awareness back to the present moment.",
+            duration: 30
+          }
+        ]
+      },
+      journaling: {
+        title: "Journaling Exercise",
+        steps: [
+          {
+            title: "Set Your Intention",
+            description: "Take a moment to reflect on what you'd like to explore through writing today.",
+            duration: 0
+          },
+          {
+            title: "Prompt: Gratitude",
+            description: "Write about three things you're grateful for today and why they matter to you.",
+            duration: 300
+          },
+          {
+            title: "Prompt: Emotions",
+            description: "Describe how you're feeling right now without judgment. What might these feelings be telling you?",
+            duration: 300
+          },
+          {
+            title: "Reflection",
+            description: "Read what you've written and notice any insights or patterns.",
+            duration: 60
+          }
+        ]
+      },
+      coping: {
+        title: "Coping Skills Practice",
+        steps: [
+          {
+            title: "Identify Your Need",
+            description: "What kind of support do you need right now? Comfort? Distraction? Problem-solving?",
+            duration: 0
+          },
+          {
+            title: "Grounding Technique",
+            description: "Name 5 things you can see, 4 things you can touch, 3 things you can hear, 2 things you can smell, and 1 thing you can taste.",
+            duration: 120
+          },
+          {
+            title: "Positive Self-Talk",
+            description: "Write down or say aloud three compassionate statements to yourself.",
+            duration: 180
+          },
+          {
+            title: "Action Plan",
+            description: "Identify one small step you can take to care for yourself right now.",
+            duration: 60
+          }
+        ]
+      },
+      meditation: {
+        title: "Meditation Classes",
+        youtubeLink: "https://www.youtube.com/watch?v=wVSkYKj26qg",
+        steps: [
+          {
+            title: "Preparation",
+            description: "Find a comfortable seated position. Gently close your eyes and take a few deep breaths.",
+            duration: 0
+          },
+          {
+            title: "Body Awareness",
+            description: "Bring awareness to your body. Notice any areas of tension and consciously release them.",
+            duration: 180
+          },
+          {
+            title: "Mindful Breathing",
+            description: "Focus on your natural breathing rhythm. When your mind wanders, gently return to your breath.",
+            duration: 420
+          },
+          {
+            title: "Loving-Kindness",
+            description: "Repeat these phrases silently: 'May I be happy. May I be healthy. May I be safe. May I live with ease.'",
+            duration: 180
+          },
+          {
+            title: "Return Gradually",
+            description: "Slowly bring awareness back to your surroundings. Gently open your eyes when ready.",
+            duration: 60
+          }
+        ]
+      },
+      relaxation: {
+        title: "Relaxation Exercises",
+        youtubeLink: "https://www.youtube.com/watch?v=cX47UAy4rmc",
+        steps: [
+          {
+            title: "Find a Quiet Space",
+            description: "Sit or lie down in a comfortable position in a quiet environment.",
+            duration: 0
+          },
+          {
+            title: "Progressive Muscle Relaxation",
+            description: "Tense and then relax each muscle group starting from your toes up to your head.",
+            duration: 300
+          },
+          {
+            title: "Deep Breathing",
+            description: "Take slow, deep breaths, focusing on releasing tension with each exhale.",
+            duration: 180
+          },
+          {
+            title: "Visualization",
+            description: "Imagine yourself in a peaceful, calming place. Engage all your senses.",
+            duration: 240
+          },
+          {
+            title: "Return to Awareness",
+            description: "Slowly bring your awareness back to the present moment.",
+            duration: 30
+          }
+        ]
+      },
+      relaxation2: {
+        title: "Deep Relaxation",
+        youtubeLink: "https://www.youtube.com/watch?v=cX47UAy4rmc",
+        steps: [
+          {
+            title: "Create a Calm Environment",
+            description: "Dim the lights and ensure you won't be disturbed. Get into a comfortable position.",
+            duration: 0
+          },
+          {
+            title: "Body Scan Relaxation",
+            description: "Slowly scan through your body, consciously releasing tension in each area.",
+            duration: 360
+          },
+          {
+            title: "Guided Visualization",
+            description: "Follow along with the guided imagery to deepen your relaxation.",
+            duration: 300
+          },
+          {
+            title: "Mindful Breathing",
+            description: "Focus on your natural breath, allowing your body to completely relax.",
+            duration: 240
+          },
+          {
+            title: "Gradual Return",
+            description: "Slowly become aware of your surroundings while maintaining a sense of calm.",
+            duration: 60
+          }
+        ]
+      }
+    };
+    
+    this.showExerciseModal(exercises[activity]);
+  }
+  
+  showExerciseModal(exercise) {
+    document.getElementById('exerciseTitle').textContent = exercise.title;
+    
+    const container = document.getElementById('exerciseContainer');
+    container.innerHTML = `
+      ${exercise.youtubeLink ? `
+        <div class="youtube-section">
+          <h4><i class="fab fa-youtube" style="color: var(--youtube-red);"></i> Guided Video Available</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 15px;">Follow along with our guided video for this exercise</p>
+          <button class="youtube-btn" onclick="window.open('${exercise.youtubeLink}', '_blank')">
+            <i class="fab fa-youtube"></i> Watch Guided Exercise
+          </button>
+        </div>
+      ` : ''}
+      <div class="exercise-steps" id="exerciseSteps">
+        ${exercise.steps.map((step, index) => `
+          <div class="exercise-step ${index === 0 ? 'active' : ''}" data-step="${index}">
+            <h4><i class="fas fa-${index === 0 ? 'play' : 'clock'}"></i> ${step.title}</h4>
+            <p>${step.description}</p>
+            ${step.duration > 0 ? `
+              <div class="timer-container">
+                <div class="timer-display" id="timerDisplay-${index}">${this.formatTime(step.duration)}</div>
+                <div class="timer-controls">
+                  <button class="timer-btn primary" onclick="studentDashboard.startTimer(${step.duration}, ${index})">
+                    <i class="fas fa-play"></i> Start
+                  </button>
+                  <button class="timer-btn secondary" onclick="studentDashboard.stopTimer()">
+                    <i class="fas fa-pause"></i> Pause
+                  </button>
+                </div>
+              </div>
+            ` : ''}
+            ${index < exercise.steps.length - 1 ? `
+              <button class="timer-btn primary" onclick="studentDashboard.nextStep(${index})" style="margin-top: 15px;">
+                Next Step <i class="fas fa-arrow-right"></i>
+              </button>
+            ` : `
+              <div class="exercise-complete">
+                <div class="completion-message">🎉 Exercise Complete!</div>
+                <div class="completion-actions">
+                  <button class="timer-btn primary" onclick="studentDashboard.completeExercise()">
+                    <i class="fas fa-check"></i> Mark Complete
+                  </button>
+                  <button class="timer-btn secondary" onclick="studentDashboard.hideExerciseModal()">
+                    Close
+                  </button>
+                </div>
+              </div>
+            `}
+          </div>
+        `).join('')}
+      </div>
+    `;
+    
+    document.getElementById('exerciseModal').classList.remove('hidden');
+  }
+  
+  startTimer(duration, stepIndex) {
+    this.stopTimer(); // Clear any existing timer
+    
+    this.timerSeconds = duration;
+    const display = document.getElementById(`timerDisplay-${stepIndex}`);
+    
+    this.timerInterval = setInterval(() => {
+      this.timerSeconds--;
+      display.textContent = this.formatTime(this.timerSeconds);
+      
+      if (this.timerSeconds <= 0) {
+        this.stopTimer();
+        this.showCompletionMessage(stepIndex);
+      }
+    }, 1000);
+  }
+  
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+  
+  formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+  
+  showCompletionMessage(stepIndex) {
+    const stepElement = document.querySelector(`[data-step="${stepIndex}"]`);
+    const timerContainer = stepElement.querySelector('.timer-container');
+    
+    timerContainer.innerHTML = `
+      <div style="text-align: center; padding: 20px;">
+        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--status-available); margin-bottom: 15px;"></i>
+        <div style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary);">Step Complete!</div>
+      </div>
+    `;
+  }
+  
+  nextStep(currentStep) {
+    const currentElement = document.querySelector(`[data-step="${currentStep}"]`);
+    const nextElement = document.querySelector(`[data-step="${currentStep + 1}"]`);
+    
+    if (currentElement && nextElement) {
+      currentElement.classList.remove('active');
+      nextElement.classList.add('active');
+      nextElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+  
+  completeExercise() {
+    if (this.currentExercise) {
+      // Update progress
+      if (!this.activityProgress[this.currentExercise]) {
+        this.activityProgress[this.currentExercise] = 0;
+      }
+      this.activityProgress[this.currentExercise]++;
+      localStorage.setItem("activityProgress", JSON.stringify(this.activityProgress));
+      
+      // Update streak
+      this.updateStreak();
+      
+      // Update UI
+      this.updateProgress();
+      
+      this.hideExerciseModal();
+      
+      // Show success message
+      this.showTemporaryMessage('Exercise completed! Great job! 🎉');
+    }
+  }
+  
+  updateProgress() {
+    // Update activity progress counts
+    Object.keys(this.activityProgress).forEach(activity => {
+      const progressElement = document.getElementById(`${activity}-progress`);
+      if (progressElement) {
+        const count = this.activityProgress[activity];
+        const labels = {
+          breathing: 'Completed',
+          journaling: 'Completed',
+          mindfulness: 'Completed',
+          coping: 'Practiced',
+          meditation: 'Attended',
+          relaxation: 'Completed',
+          relaxation2: 'Completed'
+        };
+        progressElement.textContent = `${count} ${labels[activity]}`;
+      }
+    });
+  }
+  
+  updateStreak() {
+    const today = new Date().toDateString();
+    const lastCompletion = localStorage.getItem('lastActivityCompletion');
+    
+    if (lastCompletion !== today) {
+      let streak = parseInt(localStorage.getItem('activityStreak') || '0');
+      streak++;
+      localStorage.setItem('activityStreak', streak.toString());
+      localStorage.setItem('lastActivityCompletion', today);
+      
+      document.getElementById('streak-value').textContent = streak;
+      
+      // Update achievement based on streak
+      let achievement = 'Getting Started!';
+      if (streak >= 7) achievement = 'One Week Strong!';
+      if (streak >= 30) achievement = 'Monthly Master!';
+      if (streak >= 90) achievement = 'Quarterly Champion!';
+      
+      document.getElementById('achievement-text').textContent = achievement;
+    }
+  }
+  
+  loadUserData() {
+    // Load streak
+    const streak = localStorage.getItem('activityStreak') || '0';
+    document.getElementById('streak-value').textContent = streak;
+    
+    // Load stress level (this would normally come from user input)
+    const stressLevel = localStorage.getItem('stressLevel') || '5';
+    document.getElementById('stress-level').textContent = stressLevel;
+    
+    // Load achievement
+    const streakNum = parseInt(streak);
+    let achievement = 'Getting Started!';
+    if (streakNum >= 7) achievement = 'One Week Strong!';
+    if (streakNum >= 30) achievement = 'Monthly Master!';
+    if (streakNum >= 90) achievement = 'Quarterly Champion!';
+    
+    document.getElementById('achievement-text').textContent = achievement;
+  }
+  
+  hideExerciseModal() {
+    this.stopTimer();
+    document.getElementById('exerciseModal').classList.add('hidden');
+    this.currentExercise = null;
+  }
+  
+  showCrisisModal() {
+    document.getElementById('crisisModal').classList.remove('hidden');
+  }
+  
+  hideCrisisModal() {
+    document.getElementById('crisisModal').classList.add('hidden');
+  }
+  
+  toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+  }
+  
+  toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Update icons
+    const sunIcon = document.querySelector('.sun-icon');
+    const moonIcon = document.querySelector('.moon-icon');
+    
+    if (newTheme === 'dark') {
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    } else {
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    }
+  }
+  
+  updateLanguage() {
+    // Set language in dropdown
+    document.getElementById('languageSelect').value = this.currentLanguage;
+    
+    // Update all text elements based on language
+    const elements = {
+      'page-title': 'Student Wellness Dashboard',
+      'welcome-message': 'Welcome to Your Wellness Space! 🌟',
+      'welcome-description': 'Take a moment to check in with yourself and explore activities designed to support your mental wellbeing.',
+      'activities-title': 'Exercises & Meditation',
+      'breathing-title': 'Breathing Exercises',
+      'journaling-title': 'Journaling Prompts',
+      'mindfulness-title': 'Mindfulness Activities',
+      'coping-title': 'Coping Skills',
+      'meditation-title': 'Meditation Classes',
+      'relaxation-title': 'Relaxation Exercises',
+      'relaxation2-title': 'Deep Relaxation',
+      'streak-label': 'Day Streak 🔥',
+      'stress-label': 'Stress Level /10',
+      'achievement-text': 'Getting Started!',
+      'progress-title': 'Progress & Insights',
+      'mood-label': 'Mood Tracker',
+      'goals-label': 'Weekly Goals',
+      'crisisTitle': '🚨 Immediate Support Available',
+      'suicideLifeline': 'National Suicide Prevention Lifeline',
+      'crisisText': 'Crisis Text Line',
+      'international': 'International Support',
+      'callNowText': 'Call 988 Now',
+      'chatNowText': 'Emergency Chat'
+    };
+    
+    Object.keys(elements).forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = elements[id];
+      }
+    });
+  }
+  
+  showTemporaryMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px var(--shadow-color);
+      z-index: 3000;
+      font-weight: 500;
+      max-width: 300px;
+      word-wrap: break-word;
+    `;
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+      if (messageDiv.parentNode) {
+        messageDiv.remove();
+      }
+    }, 3000);
+  }
+}
+
+// Initialize the dashboard when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  window.studentDashboard = new StudentDashboard();
+  
+  // Set initial theme
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  // Update theme icons
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  
+  if (savedTheme === 'dark') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  }
+});
+
+// Handle window resize for mobile sidebar
+window.addEventListener('resize', () => {
+  const sidebar = document.getElementById('sidebar');
+  if (window.innerWidth > 768) {
+    sidebar.classList.remove('mobile-open');
+  }
+});
+</script>
+
+</body>
+</html>

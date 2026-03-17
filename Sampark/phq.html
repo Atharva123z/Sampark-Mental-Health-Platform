@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PHQ-9 Depression Assessment - TechHealth</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    /* CSS Variables for Theme System */
+    :root {
+      --bg-gradient-start: #F8F9FA;
+      --bg-gradient-end: #E8F5F4;
+      --text-primary: #2C3E50;
+      --text-secondary: #5D6D7E;
+      --bg-white: white;
+      --bg-card: white;
+      --bg-card-secondary: linear-gradient(135deg, #F8F9FA, #FDFEFE);
+      --shadow-color: rgba(68, 160, 141, 0.08);
+      --shadow-hover: rgba(68, 160, 141, 0.15);
+      --border-color: rgba(68, 160, 141, 0.1);
+      --border-card: #E8F5F4;
+      --accent-gradient-start: #44A08D;
+      --accent-gradient-end: #4ECDC4;
+      --sidebar-gradient: linear-gradient(180deg, #44A08D 0%, #4ECDC4 100%);
+      --topbar-bg: rgba(255, 255, 255, 0.95);
+      --modal-bg: white;
+      --modal-header-bg: linear-gradient(135deg, #44A08D, #4ECDC4);
+      --modal-footer-bg: #F8F9FA;
+      --urgent-gradient: linear-gradient(90deg, #FF7875, #F8C471);
+      --warning-gradient: linear-gradient(90deg, #FAAD14, #F7DC6F);
+      --progress-bg: #E8F5F4;
+      --status-available: #52C41A;
+      --status-stable: #44A08D;
+      --status-concerning: #FF7875;
+      --chat-sidebar-width: 300px;
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient-start: #0f172a;
+      --bg-gradient-end: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --bg-white: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-secondary: linear-gradient(135deg, #1e293b, #334155);
+      --shadow-color: rgba(0, 0, 0, 0.3);
+      --shadow-hover: rgba(0, 0, 0, 0.4);
+      --border-color: rgba(34, 197, 94, 0.2);
+      --border-card: #334155;
+      --accent-gradient-start: #22c55e;
+      --accent-gradient-end: #16a34a;
+      --sidebar-gradient: linear-gradient(180deg, #15803d 0%, #16a34a 100%);
+      --topbar-bg: rgba(30, 41, 59, 0.95);
+      --modal-bg: #1e293b;
+      --modal-header-bg: linear-gradient(135deg, #22c55e, #16a34a);
+      --modal-footer-bg: #334155;
+      --urgent-gradient: linear-gradient(90deg, #ef4444, #f59e0b);
+      --warning-gradient: linear-gradient(90deg, #f59e0b, #eab308);
+      --progress-bg: #334155;
+      --status-available: #10b981;
+      --status-stable: #22c55e;
+      --status-concerning: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                  background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: var(--accent-gradient-start);
+      border: 2px solid var(--accent-gradient-end);
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 8px var(--shadow-color);
+      z-index: 1001;
+      backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.15) rotate(10deg);
+      box-shadow: 0 8px 20px var(--shadow-hover);
+    }
+
+    .theme-toggle svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      color: white;
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.95);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--sidebar-gradient);
+      color: white;
+      padding: 0;
+      z-index: 1000;
+      box-shadow: 4px 0 20px var(--shadow-color);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 30px 25px;
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: white;
+    }
+
+    .user-info {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-nav {
+      padding: 20px 0;
+    }
+
+    .nav-item {
+      margin: 5px 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 15px 25px;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border-left-color: #F7DC6F;
+      transform: translateX(5px);
+    }
+
+    .nav-link i {
+      width: 20px;
+      margin-right: 15px;
+      font-size: 1.1rem;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    .topbar {
+      background: var(--topbar-bg);
+      backdrop-filter: blur(10px);
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px var(--shadow-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .topbar .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .topbar h1 {
+      color: var(--text-primary);
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .language-selector select {
+      padding: 8px 15px;
+      border: 2px solid var(--border-card);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .language-selector select:focus {
+      outline: none;
+      border-color: var(--accent-gradient-start);
+      box-shadow: 0 0 10px var(--shadow-color);
+    }
+
+    .panic-btn {
+      background: var(--urgent-gradient);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panic-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 120, 117, 0.3);
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    /* Crisis Banner */
+    .crisis-banner {
+      background: #fff3cd;
+      color: #856404;
+      padding: 10px 20px;
+      text-align: center;
+      border-bottom: 1px solid #ffeaa7;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
+    [data-theme="dark"] .crisis-banner {
+      background: #5d4c0e;
+      color: #ffd43b;
+      border-bottom-color: #7a5f00;
+    }
+
+    .crisis-banner a {
+      color: inherit;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Intro Section */
+    .intro-section {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .intro-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .intro-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .intro-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .intro-header h2 {
+      color: var(--text-primary);
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .intro-content p {
+      color: var(--text-secondary);
+      margin-bottom: 25px;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+
+    .intro-features {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .feature-item i {
+      color: var(--accent-gradient-start);
+    }
+
+    .important-notice {
+      background: rgba(250, 173, 20, 0.1);
+      border: 1px solid rgba(250, 173, 20, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .important-notice i {
+      color: #FAAD14;
+      font-size: 1.2rem;
+      margin-top: 2px;
+    }
+
+    .important-notice p {
+      margin: 0;
+      color: var(--text-primary);
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(68, 160, 141, 0.3);
+    }
+
+    /* Assessment Section */
+    .assessment-section {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .progress-container {
+      margin-bottom: 40px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--progress-bg);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .question-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .question-header {
+      margin-bottom: 30px;
+    }
+
+    .question-number {
+      color: var(--accent-gradient-start);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .option-btn {
+      background: var(--bg-card-secondary);
+      border: 2px solid var(--border-card);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text-primary);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent-gradient-start);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-color);
+    }
+
+    .option-btn.selected {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+      border-color: var(--accent-gradient-start);
+    }
+
+    .option-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(68, 160, 141, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent-gradient-start);
+    }
+
+    .option-btn.selected .option-number {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .nav-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn.prev {
+      background: var(--bg-card-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-card);
+    }
+
+    .nav-btn.next {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .nav-btn:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-color);
+    }
+
+    /* Results Section */
+    .results-section {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .results-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .results-header {
+      margin-bottom: 30px;
+    }
+
+    .results-score {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .results-severity {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .severity-minimal { color: var(--status-available); }
+    .severity-mild { color: #F7DC6F; }
+    .severity-moderate { color: #FAAD14; }
+    .severity-moderately-severe { color: #FF7875; }
+    .severity-severe { color: var(--status-concerning); }
+
+    .results-description {
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .recommendations {
+      background: var(--bg-card-secondary);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .recommendations h3 {
+      color: var(--text-primary);
+      margin-bottom: 15px;
+    }
+
+    .recommendations ul {
+      color: var(--text-secondary);
+      padding-left: 20px;
+    }
+
+    .recommendations li {
+      margin-bottom: 10px;
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+    }
+
+    .action-btn.secondary {
+      background: var(--bg-card-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-card);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-color);
+    }
+
+    /* Chat Integration */
+    .chat-integration {
+      margin-top: 40px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-integration h3 {
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .chat-option {
+      background: var(--bg-card-secondary);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid var(--border-card);
+    }
+
+    .chat-option:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-gradient-start);
+      box-shadow: 0 10px 25px var(--shadow-hover);
+    }
+
+    .chat-option-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .chat-option.volunteer .chat-option-icon { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+    .chat-option.ai .chat-option-icon { background: linear-gradient(135deg, #4cc9f0, #4895ef); }
+    .chat-option.group .chat-option-icon { background: linear-gradient(135deg, #f72585, #b5179e); }
+
+    .chat-option h4 {
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .chat-option p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* History Section */
+    .history-section {
+      max-width: 800px;
+      margin: 40px auto 0;
+    }
+
+    .history-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .history-header h3 {
+      color: var(--text-primary);
+      font-size: 1.4rem;
+    }
+
+    .history-chart {
+      height: 200px;
+      margin-bottom: 25px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: var(--bg-card-secondary);
+      border-radius: 12px;
+      border: 1px solid var(--border-card);
+    }
+
+    .history-date {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .history-score {
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    .score-minimal { background: rgba(82, 196, 26, 0.2); color: var(--status-available); }
+    .score-mild { background: rgba(247, 220, 111, 0.2); color: #F7DC6F; }
+    .score-moderate { background: rgba(250, 173, 20, 0.2); color: #FAAD14; }
+    .score-moderately-severe { background: rgba(255, 120, 117, 0.2); color: #FF7875; }
+    .score-severe { background: rgba(255, 120, 117, 0.3); color: var(--status-concerning); }
+
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal-content {
+      background: var(--modal-bg);
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      padding: 25px 30px;
+      background: var(--modal-header-bg);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+    }
+
+    .modal-header h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: white;
+      transition: opacity 0.3s ease;
+    }
+
+    .close-btn:hover {
+      opacity: 0.7;
+    }
+
+    .modal-body {
+      padding: 30px;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    /* Crisis Modal */
+    .crisis-resources {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .resource-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .resource-item i {
+      color: var(--accent-gradient-start);
+      font-size: 1.2rem;
+    }
+
+    .crisis-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .crisis-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .crisis-btn.primary {
+      background: var(--urgent-gradient);
+      color: white;
+    }
+
+    .crisis-btn.secondary {
+      background: var(--bg-card-secondary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-card);
+    }
+
+    .crisis-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--shadow-color);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .intro-features {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .results-actions, .crisis-actions {
+        flex-direction: column;
+      }
+
+      .navigation-buttons {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .nav-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .chat-options {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-toggle {
+        display: block;
+      }
+      .topbar h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+  <svg class="sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+  </svg>
+  <svg class="moon-icon" style="display: none;" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+  </svg>
+</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">TechHealth</div>
+    <div class="user-info">
+      <i class="fas fa-user-circle"></i>
+      <span id="sidebarPortal">Student Dashboard</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item"><a href="student.html" class="nav-link"><i class="fas fa-home"></i><span id="navDashboard">Dashboard</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-heart-pulse"></i><span id="navAssessment">Mental Health Assessment</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-brain"></i><span id="navMindfulness">Mindfulness</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-book-open"></i><span id="navResources">Resources</span></a></div>
+    <div class="nav-item"><a href="chat-forum.html" class="nav-link"><i class="fas fa-comments"></i><span id="navSupportChat">Support Chat</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-calendar-alt"></i><span id="navAppointments">Appointments</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-chart-line"></i><span id="navProgress">Progress</span></a></div>
+    <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-cog"></i><span id="navSettings">Settings</span></a></div>
+    <div class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-sign-out-alt"></i><span id="navLogout">Logout</span></a></div>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h1 id="page-title">PHQ-9 Depression Assessment</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="language-selector">
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ur">اردو (Urdu)</option>
+          <option value="ks">کٲشُر (Kashmiri)</option>
+        </select>
+      </div>
+      <button id="panicButton" class="panic-btn">
+        <i class="fas fa-exclamation-triangle"></i> <span id="panicText">Emergency Help</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Crisis Banner -->
+    <div class="crisis-banner" id="crisisBanner" role="alert">
+      🚨 In crisis? Call 988 (Suicide & Crisis Lifeline) or <a href="#" id="immediateHelpLink">click here for immediate help</a>
+    </div>
+
+    <div class="intro-section" id="introSection">
+      <div class="intro-card">
+        <div class="intro-header">
+          <div class="intro-icon">
+            <i class="fas fa-heart-pulse"></i>
+          </div>
+          <h2 id="introTitle">Mental Health Assessment (PHQ-9)</h2>
+        </div>
+        
+        <div class="intro-content">
+          <p id="introDescription">
+            The PHQ-9 is a clinically validated assessment tool used to screen for depression and monitor symptom severity. 
+            This confidential questionnaire takes about 5 minutes to complete and can help you and healthcare providers 
+            understand your mental health better.
+          </p>
+          
+          <div class="intro-features">
+            <div class="feature-item">
+              <i class="fas fa-shield-alt"></i>
+              <span id="featurePrivacy">100% Confidential</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-clock"></i>
+              <span id="featureTime">5 Minutes</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-user-md"></i>
+              <span id="featureClinical">Clinically Validated</span>
+            </div>
+          </div>
+          
+          <div class="important-notice">
+            <i class="fas fa-info-circle"></i>
+            <p id="importantNotice">
+              <strong>Important:</strong> This assessment is not a diagnostic tool and should not replace professional 
+              medical advice. If you're experiencing thoughts of self-harm, please seek immediate help.
+            </p>
+          </div>
+          
+          <button class="start-btn" id="startAssessment">
+            <i class="fas fa-play"></i>
+            <span id="startText">Start Assessment</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="assessment-section" id="assessmentSection" style="display: none;">
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+          <span id="questionProgress">Question 1 of 9</span>
+        </div>
+      </div>
+
+      <div class="question-container" id="questionContainer">
+        <!-- Questions will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <div class="results-section" id="resultsSection" style="display: none;">
+      <!-- Results will be dynamically inserted here -->
+    </div>
+
+    <div class="history-section" id="historySection" style="display: none;">
+      <!-- History will be dynamically inserted here -->
+    </div>
+  </div>
+</div>
+
+<!-- Crisis Modal -->
+<div class="modal hidden" id="crisisModal">
+  <div class="modal-content">
+    <div class="modal-header crisis-header">
+      <h3 id="crisisTitle">🚨 Immediate Support Available</h3>
+      <button class="close-btn" id="closeCrisisModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="crisis-resources">
+        <div class="resource-item">
+          <i class="fas fa-phone"></i>
+          <div>
+            <strong id="suicideLifeline">National Suicide Prevention Lifeline</strong>
+            <p>988 - Available 24/7</p>
+          </div>
+        </div>
+        <div class="resource-item">
+          <i class="fas fa-comments"></i>
+          <div>
+            <strong id="crisisText">Crisis Text Line</strong>
+            <p>Text HOME to 741741</p>
+          </div>
+        </div>
+        <div class="resource-item">
+          <i class="fas fa-globe"></i>
+          <div>
+            <strong id="international">International Support</strong>
+            <p>befrienders.org</p>
+          </div>
+        </div>
+      </div>
+      <div class="crisis-actions">
+        <button class="crisis-btn primary" id="callNow">
+          <i class="fas fa-phone"></i>
+          <span id="callNowText">Call 988 Now</span>
+        </button>
+        <a href="chat-forum.html?emergency=true" class="crisis-btn secondary">
+          <i class="fas fa-comments"></i>
+          <span id="chatNowText">Emergency Chat</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Integration Modal -->
+<div class="modal hidden" id="chatModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="chatModalTitle">Connect with Support</h3>
+      <button class="close-btn" id="closeChatModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="chat-integration">
+        <div class="chat-options">
+          <div class="chat-option volunteer" data-chat-type="volunteer">
+            <div class="chat-option-icon">
+              <i class="fas fa-hands-helping"></i>
+            </div>
+            <h4>Talk to a Volunteer</h4>
+            <p>Connect with trained volunteers for emotional support and guidance</p>
+          </div>
+          <div class="chat-option ai" data-chat-type="ai">
+            <div class="chat-option-icon">
+              <i class="fas fa-robot"></i>
+            </div>
+            <h4>AI Support Assistant</h4>
+            <p>Get immediate support from our AI assistant, available 24/7</p>
+          </div>
+          <div class="chat-option group" data-chat-type="group">
+            <div class="chat-option-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h4>Support Groups</h4>
+            <p>Join peer support groups and connect with others</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// PHQ-9 Assessment Implementation with Chat Integration
+class PHQ9Assessment {
+  constructor() {
+    this.currentQuestion = 0;
+    this.answers = [];
+    this.totalScore = 0;
+    this.currentLanguage = localStorage.getItem("selectedLanguage") || "en";
+    
+    // PHQ-9 Questions
+    this.questions = [
+      "Little interest or pleasure in doing things",
+      "Feeling down, depressed, or hopeless",
+      "Trouble falling or staying asleep, or sleeping too much",
+      "Feeling tired or having little energy",
+      "Poor appetite or overeating",
+      "Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
+      "Trouble concentrating on things, such as reading the newspaper or watching television",
+      "Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual",
+      "Thoughts that you would be better off dead or of hurting yourself in some way"
+    ];
+    
+    // Answer options
+    this.options = [
+      "Not at all",
+      "Several days",
+      "More than half the days",
+      "Nearly every day"
+    ];
+    
+    // Severity levels
+    this.severityLevels = [
+      { min: 0, max: 4, level: "Minimal", description: "Your responses suggest minimal or no symptoms of depression." },
+      { min: 5, max: 9, level: "Mild", description: "Your responses suggest mild symptoms of depression." },
+      { min: 10, max: 14, level: "Moderate", description: "Your responses suggest moderate symptoms of depression." },
+      { min: 15, max: 19, level: "Moderately Severe", description: "Your responses suggest moderately severe symptoms of depression." },
+      { min: 20, max: 27, level: "Severe", description: "Your responses suggest severe symptoms of depression." }
+    ];
+    
+    // Recommendations based on severity
+    this.recommendations = {
+      "Minimal": [
+        "Continue monitoring your mood regularly",
+        "Practice self-care and stress management",
+        "Maintain healthy lifestyle habits"
+      ],
+      "Mild": [
+        "Consider speaking with a healthcare provider",
+        "Practice mindfulness and relaxation techniques",
+        "Engage in regular physical activity"
+      ],
+      "Moderate": [
+        "Schedule an appointment with a healthcare provider",
+        "Consider therapy or counseling",
+        "Develop a support network"
+      ],
+      "Moderately Severe": [
+        "Seek professional help as soon as possible",
+        "Consider medication evaluation",
+        "Create a safety plan"
+      ],
+      "Severe": [
+        "Seek immediate professional help",
+        "Contact emergency services if needed",
+        "Do not hesitate to reach out for support"
+      ]
+    };
+    
+    this.init();
+  }
+  
+  init() {
+    this.setupEventListeners();
+    this.updateLanguage();
+    this.loadAssessmentHistory();
+  }
+  
+  setupEventListeners() {
+    // Start assessment button
+    document.getElementById('startAssessment').addEventListener('click', () => {
+      this.startAssessment();
+    });
+    
+    // Language selector
+    document.getElementById('languageSelect').addEventListener('change', (e) => {
+      this.currentLanguage = e.target.value;
+      localStorage.setItem("selectedLanguage", e.target.value);
+      this.updateLanguage();
+    });
+    
+    // Emergency button
+    document.getElementById('panicButton').addEventListener('click', () => {
+      this.showCrisisModal();
+    });
+    
+    // Crisis modal
+    document.getElementById('closeCrisisModal').addEventListener('click', () => {
+      this.hideCrisisModal();
+    });
+    
+    // Crisis banner link
+    document.getElementById('immediateHelpLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showCrisisModal();
+    });
+    
+    // Call now button
+    document.getElementById('callNow').addEventListener('click', () => {
+      window.location.href = 'tel:988';
+    });
+    
+    // Mobile menu toggle
+    document.getElementById('mobileToggle').addEventListener('click', () => {
+      this.toggleSidebar();
+    });
+    
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      this.toggleTheme();
+    });
+    
+    // Chat modal
+    document.getElementById('closeChatModal').addEventListener('click', () => {
+      this.hideChatModal();
+    });
+    
+    // Chat options
+    document.querySelectorAll('.chat-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const chatType = option.getAttribute('data-chat-type');
+        this.startChat(chatType);
+      });
+    });
+  }
+  
+  startAssessment() {
+    document.getElementById('introSection').style.display = 'none';
+    document.getElementById('assessmentSection').style.display = 'block';
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('historySection').style.display = 'none';
+    
+    this.currentQuestion = 0;
+    this.answers = [];
+    this.totalScore = 0;
+    
+    this.showQuestion();
+  }
+  
+  showQuestion() {
+    const questionContainer = document.getElementById('questionContainer');
+    const progressFill = document.getElementById('progressFill');
+    const questionProgress = document.getElementById('questionProgress');
+    
+    // Update progress
+    const progress = ((this.currentQuestion) / this.questions.length) * 100;
+    progressFill.style.width = `${progress}%`;
+    questionProgress.textContent = `Question ${this.currentQuestion + 1} of ${this.questions.length}`;
+    
+    // Create question HTML
+    questionContainer.innerHTML = `
+      <div class="question-card">
+        <div class="question-header">
+          <div class="question-number">Question ${this.currentQuestion + 1}</div>
+          <div class="question-text">${this.questions[this.currentQuestion]}</div>
+        </div>
+        
+        <div class="options-container">
+          ${this.options.map((option, index) => `
+            <button class="option-btn ${this.answers[this.currentQuestion] === index ? 'selected' : ''}" 
+                    data-value="${index}" onclick="phq9.selectOption(${index})">
+              <div class="option-number">${index + 1}</div>
+              <span>${option}</span>
+            </button>
+          `).join('')}
+        </div>
+        
+        <div class="navigation-buttons">
+          <button class="nav-btn prev" ${this.currentQuestion === 0 ? 'disabled' : ''} onclick="phq9.previousQuestion()">
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button class="nav-btn next" ${this.answers[this.currentQuestion] === undefined ? 'disabled' : ''} onclick="phq9.nextQuestion()">
+            ${this.currentQuestion === this.questions.length - 1 ? 'See Results' : 'Next'} <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+  
+  selectOption(value) {
+    this.answers[this.currentQuestion] = value;
+    
+    // Update UI to show selected option
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach(btn => btn.classList.remove('selected'));
+    document.querySelector(`.option-btn[data-value="${value}"]`).classList.add('selected');
+    
+    // Enable next button
+    document.querySelector('.nav-btn.next').disabled = false;
+  }
+  
+  previousQuestion() {
+    if (this.currentQuestion > 0) {
+      this.currentQuestion--;
+      this.showQuestion();
+    }
+  }
+  
+  nextQuestion() {
+    if (this.answers[this.currentQuestion] === undefined) return;
+    
+    if (this.currentQuestion < this.questions.length - 1) {
+      this.currentQuestion++;
+      this.showQuestion();
+    } else {
+      this.calculateResults();
+    }
+  }
+  
+  calculateResults() {
+    // Calculate total score
+    this.totalScore = this.answers.reduce((sum, answer) => sum + answer, 0);
+    
+    // Determine severity
+    const severity = this.severityLevels.find(level => 
+      this.totalScore >= level.min && this.totalScore <= level.max
+    );
+    
+    // Save to history
+    this.saveToHistory(this.totalScore, severity.level);
+    
+    // Show results
+    this.showResults(severity);
+  }
+  
+  showResults(severity) {
+    document.getElementById('assessmentSection').style.display = 'none';
+    document.getElementById('resultsSection').style.display = 'block';
+    
+    const resultsSection = document.getElementById('resultsSection');
+    resultsSection.innerHTML = `
+      <div class="results-card">
+        <div class="results-header">
+          <div class="results-score">${this.totalScore}</div>
+          <div class="results-severity severity-${severity.level.toLowerCase().replace(' ', '-')}">
+            ${severity.level} Depression
+          </div>
+        </div>
+        
+        <div class="results-description">
+          ${severity.description}
+        </div>
+        
+        <div class="recommendations">
+          <h3>Recommendations</h3>
+          <ul>
+            ${this.recommendations[severity.level].map(rec => `<li>${rec}</li>`).join('')}
+          </ul>
+        </div>
+        
+        <div class="results-actions">
+          <button class="action-btn primary" onclick="phq9.startAssessment()">
+            <i class="fas fa-redo"></i> Retake Assessment
+          </button>
+          <button class="action-btn secondary" onclick="phq9.showHistory()">
+            <i class="fas fa-history"></i> View History
+          </button>
+          <button class="action-btn secondary" onclick="phq9.showChatModal()">
+            <i class="fas fa-comments"></i> Talk to Someone
+          </button>
+        </div>
+      </div>
+      
+      <div class="chat-integration">
+        <h3><i class="fas fa-comments"></i> Need to Talk?</h3>
+        <div class="chat-options">
+          <div class="chat-option volunteer" data-chat-type="volunteer">
+            <div class="chat-option-icon">
+              <i class="fas fa-hands-helping"></i>
+            </div>
+            <h4>Talk to a Volunteer</h4>
+            <p>Connect with trained volunteers for emotional support and guidance</p>
+          </div>
+          <div class="chat-option ai" data-chat-type="ai">
+            <div class="chat-option-icon">
+              <i class="fas fa-robot"></i>
+            </div>
+            <h4>AI Support Assistant</h4>
+            <p>Get immediate support from our AI assistant, available 24/7</p>
+          </div>
+          <div class="chat-option group" data-chat-type="group">
+            <div class="chat-option-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h4>Support Groups</h4>
+            <p>Join peer support groups and connect with others</p>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Re-attach event listeners for chat options
+    document.querySelectorAll('.chat-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const chatType = option.getAttribute('data-chat-type');
+        this.startChat(chatType);
+      });
+    });
+  }
+  
+  showChatModal() {
+    document.getElementById('chatModal').classList.remove('hidden');
+  }
+  
+  hideChatModal() {
+    document.getElementById('chatModal').classList.add('hidden');
+  }
+  
+  startChat(chatType) {
+    this.hideChatModal();
+    
+    // In a real application, this would redirect to the appropriate chat interface
+    // For this demo, we'll simulate the behavior
+    let chatDestination = 'chat-forum.html';
+    
+    switch(chatType) {
+      case 'volunteer':
+        chatDestination += '?type=volunteer';
+        break;
+      case 'ai':
+        chatDestination += '?type=ai';
+        break;
+      case 'group':
+        chatDestination += '?type=group';
+        break;
+    }
+    
+    // Show a message before redirecting
+    this.showTemporaryMessage(`Connecting you to ${chatType} support...`);
+    
+    // In a real app, this would redirect to the chat page
+    // window.location.href = chatDestination;
+    
+    // For demo purposes, we'll just log the action
+    console.log(`Redirecting to: ${chatDestination}`);
+  }
+  
+  showHistory() {
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('historySection').style.display = 'block';
+    
+    this.loadAssessmentHistory();
+  }
+  
+  saveToHistory(score, severity) {
+    const history = JSON.parse(localStorage.getItem('phq9History') || '[]');
+    const now = new Date();
+    
+    history.unshift({
+      date: now.toISOString(),
+      score: score,
+      severity: severity
+    });
+    
+    // Keep only last 10 assessments
+    if (history.length > 10) {
+      history.pop();
+    }
+    
+    localStorage.setItem('phq9History', JSON.stringify(history));
+  }
+  
+  loadAssessmentHistory() {
+    const history = JSON.parse(localStorage.getItem('phq9History') || '[]');
+    const historySection = document.getElementById('historySection');
+    
+    if (history.length === 0) {
+      historySection.innerHTML = `
+        <div class="history-card">
+          <h3>Assessment History</h3>
+          <p>No previous assessments found.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Create chart data
+    const labels = history.map(item => {
+      const date = new Date(item.date);
+      return date.toLocaleDateString();
+    }).reverse();
+    
+    const scores = history.map(item => item.score).reverse();
+    
+    historySection.innerHTML = `
+      <div class="history-card">
+        <div class="history-header">
+          <h3>Assessment History</h3>
+        </div>
+        
+        <div class="history-chart">
+          <canvas id="historyChart"></canvas>
+        </div>
+        
+        <div class="history-list">
+          ${history.map(item => {
+            const date = new Date(item.date);
+            return `
+              <div class="history-item">
+                <div class="history-date">${date.toLocaleDateString()}</div>
+                <div class="history-score score-${item.severity.toLowerCase().replace(' ', '-')}">
+                  ${item.score} - ${item.severity}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+          <button class="action-btn secondary" onclick="phq9.startAssessment()">
+            <i class="fas fa-plus"></i> New Assessment
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Initialize chart
+    this.initHistoryChart(labels, scores);
+  }
+  
+  initHistoryChart(labels, scores) {
+    const ctx = document.getElementById('historyChart');
+    if (!ctx) return;
+    
+    const colors = this.getThemeColors();
+    
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'PHQ-9 Score',
+          data: scores,
+          borderColor: colors.primary,
+          backgroundColor: colors.primary + '20',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: colors.primary,
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 27,
+            grid: { color: this.getThemeColors().text + '20' },
+            ticks: { 
+              stepSize: 5,
+              color: this.getThemeColors().text 
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: this.getThemeColors().text }
+          }
+        }
+      }
+    });
+  }
+  
+  getThemeColors() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    return {
+      primary: isDark ? '#22c55e' : '#44A08D',
+      secondary: isDark ? '#16a34a' : '#4ECDC4',
+      background: isDark ? '#1e293b' : '#F8F9FA',
+      text: isDark ? '#e2e8f0' : '#2C3E50'
+    };
+  }
+  
+  showCrisisModal() {
+    document.getElementById('crisisModal').classList.remove('hidden');
+  }
+  
+  hideCrisisModal() {
+    document.getElementById('crisisModal').classList.add('hidden');
+  }
+  
+  toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+  }
+  
+  toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Update icons
+    const sunIcon = document.querySelector('.sun-icon');
+    const moonIcon = document.querySelector('.moon-icon');
+    
+    if (newTheme === 'dark') {
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    } else {
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    }
+  }
+  
+  updateLanguage() {
+    // Set language in dropdown
+    document.getElementById('languageSelect').value = this.currentLanguage;
+    
+    // Update all text elements based on language
+    const elements = {
+      'page-title': 'PHQ-9 Depression Assessment',
+      'sidebarPortal': 'Student Dashboard',
+      'navDashboard': 'Dashboard',
+      'navAssessment': 'Mental Health Assessment',
+      'navMindfulness': 'Mindfulness',
+      'navResources': 'Resources',
+      'navSupportChat': 'Support Chat',
+      'navAppointments': 'Appointments',
+      'navProgress': 'Progress',
+      'navSettings': 'Settings',
+      'navLogout': 'Logout',
+      'panicText': 'Emergency Help',
+      'introTitle': 'Mental Health Assessment (PHQ-9)',
+      'introDescription': 'The PHQ-9 is a clinically validated assessment tool used to screen for depression and monitor symptom severity. This confidential questionnaire takes about 5 minutes to complete and can help you and healthcare providers understand your mental health better.',
+      'featurePrivacy': '100% Confidential',
+      'featureTime': '5 Minutes',
+      'featureClinical': 'Clinically Validated',
+      'importantNotice': '<strong>Important:</strong> This assessment is not a diagnostic tool and should not replace professional medical advice. If you\'re experiencing thoughts of self-harm, please seek immediate help.',
+      'startText': 'Start Assessment',
+      'crisisTitle': '🚨 Immediate Support Available',
+      'suicideLifeline': 'National Suicide Prevention Lifeline',
+      'crisisText': 'Crisis Text Line',
+      'international': 'International Support',
+      'callNowText': 'Call 988 Now',
+      'chatNowText': 'Emergency Chat'
+    };
+    
+    Object.keys(elements).forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        if (id === 'importantNotice') {
+          element.innerHTML = elements[id];
+        } else {
+          element.textContent = elements[id];
+        }
+      }
+    });
+  }
+  
+  showTemporaryMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px var(--shadow-color);
+      z-index: 3000;
+      font-weight: 500;
+      max-width: 300px;
+      word-wrap: break-word;
+    `;
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+      if (messageDiv.parentNode) {
+        messageDiv.remove();
+      }
+    }, 3000);
+  }
+}
+
+// Initialize the assessment when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  window.phq9 = new PHQ9Assessment();
+  
+  // Set initial theme
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  // Update theme icons
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  
+  if (savedTheme === 'dark') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  }
+});
+
+// Handle window resize for mobile sidebar
+window.addEventListener('resize', () => {
+  const sidebar = document.getElementById('sidebar');
+  if (window.innerWidth > 768) {
+    sidebar.classList.remove('mobile-open');
+  }
+});
+</script>
+
+</body>
+</html>

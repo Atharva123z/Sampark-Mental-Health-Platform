@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechHealth - Mental Wellness Platform for Students</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    
+    :root {
+      --bg-gradient-start: #F8F9FA;
+      --bg-gradient-end: #E8F5F4;
+      --text-primary: #2C3E50;
+      --text-secondary: #5D6D7E;
+      --bg-white: white;
+      --bg-card: white;
+      --shadow-color: rgba(78, 205, 196, 0.08);
+      --shadow-hover: rgba(78, 205, 196, 0.15);
+      --border-color: rgba(78, 205, 196, 0.1);
+      --accent-gradient-start: #4ECDC4;
+      --accent-gradient-end: #44A08D;
+      --hero-gradient: linear-gradient(135deg, #4ECDC4, #A2EBB3, #F7DC6F);
+      --feature-gradient: linear-gradient(135deg, #BB8FCE, #D2B4DE);
+      --wellness-gradient: linear-gradient(135deg, #AED6F1, #85C1E9);
+      --success-gradient: linear-gradient(135deg, #A2EBB3, #82E0AA);
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient-start: #0f172a;
+      --bg-gradient-end: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --bg-white: #1e293b;
+      --bg-card: #1e293b;
+      --shadow-color: rgba(0, 0, 0, 0.3);
+      --shadow-hover: rgba(0, 0, 0, 0.4);
+      --border-color: rgba(56, 189, 248, 0.2);
+      --accent-gradient-start: #38bdf8;
+      --accent-gradient-end: #0891b2;
+      --hero-gradient: linear-gradient(135deg, #0891b2, #22d3ee, #fbbf24);
+      --feature-gradient: linear-gradient(135deg, #a855f7, #8b5cf6);
+      --wellness-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      --success-gradient: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                  background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: var(--accent-gradient-start);
+      border: 2px solid var(--accent-gradient-end);
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 8px var(--shadow-color);
+      z-index: 1001;
+      backdrop-filter: blur(10px);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.15) rotate(10deg);
+      box-shadow: 0 8px 20px var(--shadow-hover);
+    }
+
+    .theme-toggle svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: white;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 1rem 0;
+      z-index: 1000;
+      box-shadow: 0 2px 20px var(--shadow-color);
+    }
+
+    [data-theme="dark"] nav {
+      background: rgba(30, 41, 59, 0.95);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-gradient-start);
+      transform: translateY(-2px);
+    }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 2rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 800px;
+      height: 800px;
+      background: var(--hero-gradient);
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-30px) rotate(120deg); }
+      66% { transform: translateY(20px) rotate(240deg); }
+    }
+
+    .hero-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-content {
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+    }
+
+    .hero-gradient-text {
+      background: var(--hero-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      color: white;
+      box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 2px solid var(--accent-gradient-start);
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent-gradient-start);
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+      position: relative;
+      z-index: 2;
+    }
+
+    .dashboard-preview {
+      background: var(--bg-card);
+      border-radius: 25px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px var(--shadow-color);
+      transform: rotate(5deg);
+      transition: transform 0.3s ease;
+    }
+
+    .dashboard-preview:hover {
+      transform: rotate(0deg) scale(1.02);
+    }
+
+    .preview-header {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .preview-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-gradient-start);
+    }
+
+    .preview-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .preview-card {
+      background: var(--hero-gradient);
+      padding: 1.5rem;
+      border-radius: 15px;
+      color: white;
+      text-align: center;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 6rem 2rem;
+    }
+
+    .features-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 4rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      padding: 2.5rem;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid var(--border-color);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px var(--shadow-hover);
+    }
+
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .student-icon {
+      background: var(--wellness-gradient);
+    }
+
+    .counselor-icon {
+      background: var(--success-gradient);
+    }
+
+    .admin-icon {
+      background: var(--feature-gradient);
+    }
+
+    .feature-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .feature-desc {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-list {
+      list-style: none;
+      text-align: left;
+    }
+
+    .feature-list li {
+      padding: 0.5rem 0;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feature-list li i {
+      color: var(--accent-gradient-start);
+    }
+
+    /* Stats Section */
+    .stats {
+      background: var(--bg-card);
+      padding: 4rem 2rem;
+      margin: 4rem 0;
+    }
+
+    .stats-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 3rem;
+      text-align: center;
+    }
+
+    .stat-item {
+      padding: 2rem;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* CTA Section */
+    .cta {
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+
+    .cta-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      padding: 4rem;
+      border-radius: 30px;
+      box-shadow: 0 20px 60px var(--shadow-color);
+    }
+
+    .cta-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cta-desc {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-card);
+      padding: 3rem 2rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-gradient-start);
+    }
+
+    .footer-bottom {
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .nav-container {
+        padding: 0 1rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .cta-container {
+        padding: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 5rem 1rem 2rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .features,
+      .cta {
+        padding: 4rem 1rem;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Theme Toggle Button -->
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+  <!-- Sun Icon (Light Mode) -->
+  <svg class="sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+  </svg>
+  <!-- Moon Icon (Dark Mode) -->
+  <svg class="moon-icon" style="display: none;" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+  </svg>
+</button>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-container">
+    <div class="logo">TechHealth</div>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#support">Support</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="index.html" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-container">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Your Mental Wellness Journey Starts with 
+        <span class="hero-gradient-text">TechHealth</span>
+      </h1>
+      <p class="hero-subtitle">
+        A comprehensive mental health platform designed specifically for students. Access personalized wellness tools, connect with professional counselors, and build healthy habits that last a lifetime.
+      </p>
+      <div class="hero-cta">
+        <a href="index.html" class="btn btn-primary">
+          <i class="fas fa-rocket"></i>
+          Start Your Journey
+        </a>
+        <a href="#features" class="btn btn-secondary">
+          <i class="fas fa-play"></i>
+          Learn More
+        </a>
+      </div>
+    </div>
+    
+    <div class="hero-visual">
+      <div class="dashboard-preview">
+        <div class="preview-header">
+          <div class="preview-dot"></div>
+          <div class="preview-dot" style="background: #F7DC6F;"></div>
+          <div class="preview-dot" style="background: #BB8FCE;"></div>
+        </div>
+        <div class="preview-content">
+          <div class="preview-card">
+            <h4>🧘 Mindfulness</h4>
+            <p>Daily exercises</p>
+          </div>
+          <div class="preview-card">
+            <h4>📊 Progress</h4>
+            <p>Track your growth</p>
+          </div>
+          <div class="preview-card">
+            <h4>💬 Support</h4>
+            <p>24/7 counseling</p>
+          </div>
+          <div class="preview-card">
+            <h4>🎯 Goals</h4>
+            <p>Personal milestones</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+  <div class="stats-container">
+    <div class="stat-item">
+      <div class="stat-number">10K+</div>
+      <div class="stat-label">Students Supported</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">500+</div>
+      <div class="stat-label">Licensed Counselors</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">95%</div>
+      <div class="stat-label">Satisfaction Rate</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">24/7</div>
+      <div class="stat-label">Support Available</div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features" id="features">
+  <div class="features-container">
+    <h2 class="section-title">Comprehensive Mental Health Support</h2>
+    <p class="section-subtitle">
+      TechHealth provides tailored experiences for every user type, ensuring comprehensive mental health support across your entire educational community.
+    </p>
+    
+    <div class="features-grid">
+      <!-- Student Features -->
+      <div class="feature-card">
+        <div class="feature-icon student-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3 class="feature-title">For Students</h3>
+        <p class="feature-desc">
+          A safe, welcoming space designed to support your mental wellness journey with personalized tools and activities.
+        </p>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Mood tracking & progress insights</li>
+          <li><i class="fas fa-check-circle"></i> Mindfulness & meditation exercises</li>
+          <li><i class="fas fa-check-circle"></i> Journaling prompts & coping skills</li>
+          <li><i class="fas fa-check-circle"></i> 24/7 crisis support button</li>
+          <li><i class="fas fa-check-circle"></i> Anonymous peer support forums</li>
+          <li><i class="fas fa-check-circle"></i> Goal setting & achievement tracking</li>
+        </ul>
+      </div>
+
+      <!-- Counselor Features -->
+      <div class="feature-card">
+        <div class="feature-icon counselor-icon">
+          <i class="fas fa-user-md"></i>
+        </div>
+        <h3 class="feature-title">For Counselors</h3>
+        <p class="feature-desc">
+          Advanced tools to provide exceptional care, manage client relationships, and track therapeutic progress effectively.
+        </p>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Client progress monitoring</li>
+          <li><i class="fas fa-check-circle"></i> Session scheduling & management</li>
+          <li><i class="fas fa-check-circle"></i> Secure case notes system</li>
+          <li><i class="fas fa-check-circle"></i> Emergency alert protocols</li>
+          <li><i class="fas fa-check-circle"></i> Mood trend analytics</li>
+          <li><i class="fas fa-check-circle"></i> Resource library access</li>
+        </ul>
+      </div>
+
+      <!-- Admin Features -->
+      <div class="feature-card">
+        <div class="feature-icon admin-icon">
+          <i class="fas fa-cogs"></i>
+        </div>
+        <h3 class="feature-title">For Administrators</h3>
+        <p class="feature-desc">
+          Comprehensive oversight tools to manage platform operations, analyze usage patterns, and ensure optimal service delivery.
+        </p>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Platform analytics & reporting</li>
+          <li><i class="fas fa-check-circle"></i> User management & access control</li>
+          <li><i class="fas fa-check-circle"></i> Counselor performance metrics</li>
+          <li><i class="fas fa-check-circle"></i> System health monitoring</li>
+          <li><i class="fas fa-check-circle"></i> Crisis intervention oversight</li>
+          <li><i class="fas fa-check-circle"></i> Data export & compliance tools</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta" id="about">
+  <div class="cta-container">
+    <h2 class="cta-title">Ready to Transform Mental Health Support?</h2>
+    <p class="cta-desc">
+      Join thousands of students, counselors, and administrators who trust TechHealth to provide comprehensive, accessible mental health support. Start making a difference today.
+    </p>
+    <div class="hero-cta">
+      <a href="index.html" class="btn btn-primary">
+        <i class="fas fa-heart"></i>
+        Begin Your Wellness Journey
+      </a>
+      <a href="#contact" class="btn btn-secondary">
+        <i class="fas fa-info-circle"></i>
+        Learn More About Us
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer id="contact">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="#privacy">Privacy Policy</a>
+      <a href="#terms">Terms of Service</a>
+      <a href="#support">Support</a>
+      <a href="#accessibility">Accessibility</a>
+      <a href="#crisis">Crisis Resources</a>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 TechHealth. All rights reserved.</p>
+      <p>🌱 Supporting student mental wellness through technology</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Theme toggle functionality
+const themeToggle = document.getElementById('themeToggle');
+const sunIcon = document.querySelector('.sun-icon');
+const moonIcon = document.querySelector('.moon-icon');
+const html = document.documentElement;
+
+// Check for saved theme preference or default to light mode
+const currentTheme = localStorage.getItem('theme') || 'light';
+html.setAttribute('data-theme', currentTheme);
+
+// Update icon visibility based on current theme
+function updateIcon() {
+  const theme = html.getAttribute('data-theme');
+  if (theme === 'dark') {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
+  } else {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  }
+}
+
+// Initialize icon state
+updateIcon();
+
+// Toggle theme function
+function toggleTheme() {
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateIcon();
+}
+
+// Add event listeners
+themeToggle.addEventListener('click', toggleTheme);
+
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+});
+
+// Animate stats on scroll
+const observerOptions = {
+  threshold: 0.5,
+  rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const statNumbers = entry.target.querySelectorAll('.stat-number');
+      statNumbers.forEach(stat => {
+        const finalValue = stat.textContent;
+        const numericValue = parseInt(finalValue.replace(/\D/g, ''));
+        
+        if (numericValue && !stat.hasAttribute('data-animated')) {
+          stat.setAttribute('data-animated', 'true');
+          let currentValue = 0;
+          const increment = Math.ceil(numericValue / 100);
+          const timer = setInterval(() => {
+            currentValue += increment;
+            if (currentValue >= numericValue) {
+              currentValue = numericValue;
+              clearInterval(timer);
+            }
+            stat.textContent = finalValue.replace(/\d+/, currentValue.toLocaleString());
+          }, 20);
+        }
+      });
+    }
+  });
+}, observerOptions);
+
+// Observe the stats section
+const statsSection = document.querySelector('.stats');
+if (statsSection) {
+  observer.observe(statsSection);
+}
+
+// Add loading animation to hero
+window.addEventListener('load', () => {
+  document.querySelector('.hero-content').style.opacity = '1';
+  document.querySelector('.hero-content').style.transform = 'translateY(0)';
+});
+
+// Initial hero content styling
+document.querySelector('.hero-content').style.opacity = '0';
+document.querySelector('.hero-content').style.transform = 'translateY(30px)';
+document.querySelector('.hero-content').style.transition = 'all 1s ease';
+</script>
+
+</body>
+</html>

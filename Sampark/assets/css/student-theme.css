@@ -1,0 +1,40 @@
+/* CSS Variables for Theme System */
+:root {
+  --bg-gradient-start: #F8F9FA;
+  --bg-gradient-end: #E8F5F4;
+  --text-primary: #2C3E50;
+  --text-secondary: #5D6D7E;
+  --bg-white: white;
+  --bg-card: white;
+  --bg-card-secondary: linear-gradient(135deg, white, #F8F9FA);
+  --shadow-color: rgba(78, 205, 196, 0.08);
+  --shadow-hover: rgba(78, 205, 196, 0.15);
+  --border-color: rgba(78, 205, 196, 0.1);
+  --border-card: #E8F5F4;
+  --accent-gradient-start: #4ECDC4;
+  --accent-gradient-end: #44A08D;
+  --sidebar-gradient: linear-gradient(180deg, #4ECDC4 0%, #44A08D 100%);
+  --topbar-bg: rgba(255,255,255,0.95);
+  --welcome-bg: linear-gradient(135deg, #FDFEFE, rgba(78,205,196,0.05));
+  --welcome-decoration: rgba(162,235,179,0.2);
+}
+
+[data-theme="dark"] {
+  --bg-gradient-start: #0f172a;
+  --bg-gradient-end: #1e293b;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --bg-white: #1e293b;
+  --bg-card: #1e293b;
+  --bg-card-secondary: linear-gradient(135deg, #1e293b, #334155);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-hover: rgba(0, 0, 0, 0.4);
+  --border-color: rgba(56, 189, 248, 0.2);
+  --border-card: #334155;
+  --accent-gradient-start: #38bdf8;
+  --accent-gradient-end: #0891b2;
+  --sidebar-gradient: linear-gradient(180deg, #0891b2 0%, #0e7490 100%);
+  --topbar-bg: rgba(30, 41, 59, 0.95);
+  --welcome-bg: linear-gradient(135deg, #1e293b, rgba(56, 189, 248, 0.05));
+  --welcome-decoration: rgba(56, 189, 248, 0.2);
+}

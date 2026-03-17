@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Chat Forum - TechHealth</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/chat-theme.css">
+  <link rel="stylesheet" href="assets/css/chat-styles.css">
+</head>
+<body>
+
+<!-- Theme Toggle Button -->
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+  <svg class="sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+  </svg>
+  <svg class="moon-icon" style="display: none;" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+  </svg>
+</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo" id="sidebarLogo">TechHealth</div>
+    <div class="user-info">
+      <i class="fas fa-user-circle"></i>
+      <span id="sidebarPortal">Student Dashboard</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item">
+      <a href="student.html" class="nav-link">
+        <i class="fas fa-home"></i>
+        <span id="navDashboard">Dashboard</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-brain"></i>
+        <span id="navMindfulness">Mindfulness</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-book-open"></i>
+        <span id="navResources">Resources</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a href="#" class="nav-link active">
+        <i class="fas fa-comments"></i>
+        <span id="navSupportChat">Support Chat</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-calendar-alt"></i>
+        <span id="navAppointments">Appointments</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-chart-line"></i>
+        <span id="navProgress">Progress</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a href="#" class="nav-link">
+        <i class="fas fa-cog"></i>
+        <span id="navSettings">Settings</span>
+      </a>
+    </div>
+    <div class="nav-item">
+      <a href="index.html" class="nav-link">
+        <i class="fas fa-sign-out-alt"></i>
+        <span id="navLogout">Logout</span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <button class="mobile-chat-toggle" onclick="toggleChatSidebar()">
+        <i class="fas fa-comments"></i>
+      </button>
+      <h1 id="page-title">Support Chat Forum</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="language-selector">
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ur">اردو (Urdu)</option>
+          <option value="ks">کٲشُر (Kashmiri)</option>
+        </select>
+      </div>
+      <button id="panicButton" class="panic-btn">
+        <i class="fas fa-exclamation-triangle"></i> Panic
+      </button>
+    </div>
+  </div>
+
+  <!-- Crisis Support Banner -->
+  <div class="crisis-banner" id="crisisBanner">
+    🚨 In crisis? Call 988 (Suicide & Crisis Lifeline) or <a href="#">click here for immediate help</a>
+  </div>
+
+  <div class="chat-container">
+    <!-- Chat Sidebar -->
+    <div class="chat-sidebar" id="chatSidebar">
+      <div class="chat-header">
+        <div class="chat-search">
+          <i class="fas fa-search"></i>
+          <input type="text" id="chatSearchInput" placeholder="Search conversations...">
+        </div>
+      </div>
+
+      <div class="chat-tabs">
+        <button class="chat-tab active" data-tab="volunteers" id="volunteersTab">Volunteers</button>
+        <button class="chat-tab" data-tab="groups" id="groupsTab">Groups</button>
+        <button class="chat-tab" data-tab="ai" id="aiTab">AI Support</button>
+      </div>
+
+      <div class="safety-notice" id="safetyNotice">
+        💚 This is a safe space. Our volunteers are here to listen and support you. All conversations are confidential.
+      </div>
+
+      <div class="chat-list" id="chatList">
+        <!-- Volunteer Chats -->
+        <div class="chat-item active" data-chat="sarah-volunteer">
+          <div class="chat-avatar" style="background: var(--message-volunteer);">
+            S
+            <div class="status-indicator status-online"></div>
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">
+              Sarah Chen
+              <span class="volunteer-badge">Volunteer</span>
+            </div>
+            <div class="chat-preview">I'm here to listen whenever you need...</div>
+          </div>
+          <div class="chat-meta">
+            <div class="chat-time">2m ago</div>
+            <div class="unread-badge">3</div>
+          </div>
+        </div>
+
+        <div class="chat-item" data-chat="alex-volunteer">
+          <div class="chat-avatar" style="background: var(--message-volunteer);">
+            A
+            <div class="status-indicator status-online"></div>
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">
+              Alex Rodriguez
+              <span class="volunteer-badge">Volunteer</span>
+            </div>
+            <div class="chat-preview">How are you feeling today?</div>
+          </div>
+          <div class="chat-meta">
+            <div class="chat-time">1h ago</div>
+          </div>
+        </div>
+
+        <div class="chat-item" data-chat="maya-volunteer">
+          <div class="chat-avatar" style="background: var(--message-volunteer);">
+            M
+            <div class="status-indicator status-away"></div>
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">
+              Dr. Maya Patel
+              <span class="volunteer-badge">Counselor</span>
+            </div>
+            <div class="chat-preview">Remember, small steps count too</div>
+          </div>
+          <div class="chat-meta">
+            <div class="chat-time">3h ago</div>
+          </div>
+        </div>
+
+        <div class="chat-item" data-chat="support-ai">
+          <div class="chat-avatar" style="background: var(--accent-gradient-start);">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">
+              TechHealth AI
+              <span class="volunteer-badge" style="background: var(--accent-gradient-start);">AI</span>
+            </div>
+            <div class="chat-preview">I'm available 24/7 for support</div>
+          </div>
+          <div class="chat-meta">
+            <div class="chat-time">Always</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Main Area -->
+    <div class="chat-main" id="chatMain">
+      <div class="chat-main-header">
+        <div class="chat-title-info">
+          <div class="chat-avatar" style="background: var(--message-volunteer);" id="currentChatAvatar">
+            S
+            <div class="status-indicator status-online"></div>
+          </div>
+          <div class="chat-title-details">
+            <h3 id="currentChatName">Sarah Chen</h3>
+            <div class="chat-status">
+              <i class="fas fa-circle" style="color: var(--online-status);"></i>
+              <span id="currentChatStatus">Online • Volunteer</span>
+            </div>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <button class="chat-action-btn" id="reportBtn" title="Report Issue">
+            <i class="fas fa-flag"></i>
+          </button>
+          <button class="chat-action-btn" id="videoCallBtn" title="Video Call">
+            <i class="fas fa-video"></i>
+          </button>
+          <button class="chat-action-btn" id="moreOptionsBtn" title="More Options">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="messages-area" id="messagesArea">
+        <div class="message system">
+          <div class="message-content">
+            <div class="message-text">🌟 You're now connected with Sarah Chen, a trained volunteer. This conversation is confidential and secure.</div>
+          </div>
+        </div>
+
+        <div class="message volunteer">
+          <div class="message-avatar" style="background: var(--message-volunteer);">S</div>
+          <div class="message-content">
+            <div class="message-text">Hi there! I'm Sarah, and I'm here to listen and support you. How are you feeling today? 😊</div>
+            <div class="message-time">10:30 AM</div>
+          </div>
+        </div>
+
+        <div class="message user">
+          <div class="message-avatar" style="background: var(--message-user);">You</div>
+          <div class="message-content">
+            <div class="message-text">Hi Sarah, I've been feeling really overwhelmed with my studies lately. I can't seem to focus and I'm falling behind.</div>
+            <div class="message-time">10:32 AM</div>
+          </div>
+        </div>
+
+        <div class="message volunteer">
+          <div class="message-avatar" style="background: var(--message-volunteer);">S</div>
+          <div class="message-content">
+            <div class="message-text">I hear you, and what you're experiencing sounds really challenging. It's completely normal to feel overwhelmed sometimes, especially with academic pressure. You took a brave step by reaching out. 💚</div>
+            <div class="message-time">10:33 AM</div>
+          </div>
+        </div>
+
+        <div class="message volunteer">
+          <div class="message-avatar" style="background: var(--message-volunteer);">S</div>
+          <div class="message-content">
+            <div class="message-text">Can you tell me a bit more about what specifically is making you feel overwhelmed? Is it the workload, upcoming deadlines, or something else?</div>
+            <div class="message-time">10:34 AM</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="message-input-area">
+        <div class="input-container">
+          <textarea 
+            class="message-input" 
+            id="messageInput" 
+            placeholder="Type your message here... Remember, this is a safe space to share your thoughts and feelings."
+            rows="1"></textarea>
+          <button class="send-btn" id="sendBtn" disabled>
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/chat-theme.js"></script>
+<script src="assets/js/chat-translations.js"></script>
+<script src="assets/js/chat-functionality.js"></script>
+<script src="assets/js/chat-app.js"></script>
+
+</body>
+</html>
